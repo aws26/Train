@@ -99,6 +99,9 @@ int numintersections;
 int currTile=0;
 Tile* theTiles[BOARD_SIZE][BOARD_SIZE];
 Shape3d* tileShapes[BOARD_SIZE][BOARD_SIZE];
+Matrix movement_list[12];
+
+float movement_scale;
 
 double sph_rad ;
 double cyl_h ;
@@ -242,6 +245,9 @@ void my_setup(int argc, char **argv){
   //EX: ./glmain spec3
   my_assert(argc >1, "need to supply a spec file");
   read_spec(argv[1]);
+
+  init_movement();
+
   return;
 }
 
@@ -552,6 +558,35 @@ void lighting_setup () {
   }
 
 }
+
+
+void init_movement()
+{
+	movement_scale = 1.0; // probably something different
+
+	for(int a=0; a<12; a++)
+	{
+		movement_list[a] = *(new Matrix());
+	}
+
+	//state 0, fall
+	movement_list[0].grid[1][3] = -1.0;
+
+	//state 1, right
+	movement_list[1].grid[0][3] = 1.0;
+
+	//state 2, left
+	movement_list[2].grid[0][3] = -1.0;
+
+	//state 3, down
+	movement_list[3].grid[2][3] = 1.0;
+
+	//state 4, up
+	movement_list[4].grid[2][3] = -1.0;
+
+
+}
+
 
 void my_reshape(int w, int h) {
   // ensure a square view port
@@ -1773,26 +1808,26 @@ void draw_cube(Shape3d* thecube)
 //copy of draw_cube, but allows to color choosing, will use texturing later
 void draw_tile(Shape3d* thecube, int color)
 {
-	//printf("i should draw a cube\n");
-	for (int i=0; i<thecube->facecount; i++)
-	{
-			//printf("face number %d\n", i);
-			switch (i)
-			{
-					case 0:
-					case 1: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//left
-					case 2:
-					case 3: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//front
-					case 4:
-					case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
-					case 6:
-					case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
-					case 8:
-					case 9: my_draw_triangle(*(thecube->facelist[i]), color, thecube->rendermode); break;//top
-					case 10:
-					case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
-			}
-	}
+        //printf("i should draw a cube\n");
+        for (int i=0; i<thecube->facecount; i++)
+        {
+                //printf("face number %d\n", i);
+                switch (i)
+                {
+                        case 0:
+                        case 1: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//left
+                        case 2:
+                        case 3: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//front
+                        case 4:
+                        case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
+                        case 6:
+                        case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
+                        case 8:
+                        case 9: my_draw_triangle(*(thecube->facelist[i]), color, thecube->rendermode); break;//top
+                        case 10:
+                        case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
+                }
+        }
 }
 
 
@@ -2108,7 +2143,7 @@ void draw_tiles()
 			switch(theTiles[i][j]->state)
 			{
 				case 0:
-					//draw_tile(cur, BLACK);
+					draw_tile(cur, BLACK);
 					break;
 				case 1:
 					draw_tile(cur, GREEN);
@@ -2225,3 +2260,4 @@ void my_TimeOut(int id) {
 
         return ;
 }
+

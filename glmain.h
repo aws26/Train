@@ -67,6 +67,7 @@ void read_spec(char *fname) ;
 void parse_nums(char *buffer, GLfloat nums[]) ;
 void parse_bldg(char *buffer);
 void parse_light(char *buffer);
+void init_movement();
 
 void gen_vertices(void);
 void my_mult_pt(GLfloat *p);
