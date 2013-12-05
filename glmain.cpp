@@ -458,7 +458,7 @@ void parse_tile(char *buffer)
 
   //printf("ceate tile (%d, %d) at position (%d, %d) with state %d\n", i, j, row, col, stateI);
   //creates the tile object
-  theTiles[i][j] = new Tile(row,col,stateI);
+  theTiles[i][j] = new Tile(row,col,stateI,0.0);
   currTile++;
 
   //creates the tile shape (cube)
@@ -2143,7 +2143,7 @@ void draw_tiles()
 			switch(theTiles[i][j]->state)
 			{
 				case 0:
-					draw_tile(cur, BLACK);
+					//draw_tile(cur, BLACK);
 					break;
 				case 1:
 					draw_tile(cur, GREEN);
