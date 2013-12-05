@@ -5,6 +5,8 @@ DATE: 02/28/08
 DOES: header file for cs1566 Assignment 4 -- Modeler
 ***************************************************/
 
+//adding a commit
+
 #ifndef __CS1566_GLOBALS
 #define __CS1566_GLOBALS
 
