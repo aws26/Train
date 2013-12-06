@@ -7,6 +7,7 @@
 #define PI 3.14159
 #define TWOPI 6.28319
 #define HALFPI 1.57080
+#define RAD_FRACTION 6
 
 #define CUBE         1
 #define HOUSE         2
@@ -126,12 +127,14 @@ public:
        int row;
        int col;
        int state;
+	   Vertex3d corners[4]; // 0->3 is bottom left, top left, top right, bottom right
 
        Tile();
        Tile(int,int,int,float);
        void setstate(int, float);
 	   void setspeed(float);
        void getnext(int*, int*);
+	   Matrix get_rotate(Vertex3d, float,float);
 };
 
 class Train
@@ -145,7 +148,7 @@ public:
        Tile* map[5][5];
 
        Train(Tile*);
-       void maketiles();
+       //void maketiles();
        void followtrack();
 };
 

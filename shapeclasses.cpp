@@ -891,9 +891,24 @@ void Tile::setstate(int s, float sp) //incomplete
 			movement->grid[0][3] = -1.0 * sp; break;
 		case 3: //down
 			movement->grid[2][3] = 1.0 * sp; break;
-		case 4: //down
+		case 4: //up
 			movement->grid[2][3] = -1.0 * sp; break;
-		case 5: //
+		case 5: //clockwise to down
+			movement = &get_rotate(corners[0], sp, -1.0); break;
+		case 6: //counterclockwise to left
+			movement = &get_rotate(corners[0], sp, 1.0); break;
+		case 7: //clockwise to left
+			movement = &get_rotate(corners[1], sp, -1.0); break;
+		case 8: //counterclockwise to up
+			movement = &get_rotate(corners[1], sp, 1.0); break;
+		case 9: //clockwise to up
+			movement = &get_rotate(corners[2], sp, -1.0); break;
+		case 10: //counterclockwise to right
+			movement = &get_rotate(corners[2], sp, 1.0); break;
+		case 11: //clockwise to right
+			movement = &get_rotate(corners[3], sp, -1.0); break;
+		case 12: //counterclockwise to down
+			movement = &get_rotate(corners[3], sp, 1.0); break;
 	   default: break;
 	   }
 }
@@ -938,6 +953,52 @@ void Tile::getnext(int* a, int*b)
 }
 
 
+Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
+{
+	//rotate around arbitrary axis time
+
+	//Vertex3d top = *(new Vertex3d(bot.coords[0], bot.coords[1] + 1, bot.coords[2]));
+
+	float deg = dir * sp * (PI/RAD_FRACTION);
+
+	Matrix result = *(new Matrix()); // transformation matrix
+
+	result.grid[0][3] = -1.0 * bot.coords[0];  // translate vector base to origin
+	result.grid[1][3] = -1.0 * bot.coords[1];
+	result.grid[2][3] = -1.0 * bot.coords[2];
+
+	float ux = 0.0; // get direction
+	float uy = 1.0;
+	float uz = 0.0;
+    
+	Matrix* m = new Matrix(); // second matrix: rotation
+
+	m->grid[0][0] = (ux * ux) + cos(deg) * (1-(ux * ux));
+	m->grid[0][1] = (ux * uy) * (1 - cos(deg)) - uz * sin(deg);
+	m->grid[0][2] = (uz * ux) * (1 - cos(deg)) + uy * sin(deg);
+
+	m->grid[1][0] = (ux * uy) * (1 - cos(deg)) + uz * sin(deg);
+	m->grid[1][1] = (uy * uy) + cos(deg) * (1-(uy * uy));
+	m->grid[1][2] = (uy * uz) * (1 - cos(deg)) - ux * sin(deg);
+
+	m->grid[2][0] = (uz * ux) * (1 - cos(deg)) - uy * sin(deg);
+	m->grid[2][1] = (uy * uz) * (1 - cos(deg)) + ux * sin(deg);
+	m->grid[2][2] = (uz * uz) + cos(deg) * (1-(uz * uz));
+
+	result = *result.multiply(m);  // multiply rotation matrix in
+
+	m = new Matrix(); // third matrix, translate back
+
+	m->grid[0][3] = bot.coords[0];
+	m->grid[1][3] = bot.coords[1];
+	m->grid[2][3] = bot.coords[2];
+
+	result = *result.multiply(m);  // multiply translation matrix in
+
+	return result;
+}
+
+
 Train::Train(Tile* p)
 {
        move = true;
@@ -946,13 +1007,13 @@ Train::Train(Tile* p)
        body->make_cube(1);
        position = p;  //starting tile
 
-       maketiles();
+       //maketiles();
 }
 
 
-void Train::maketiles()//this makes tiles for the map
+/*void Train::maketiles()//this makes tiles for the map
 {
-}
+}*/
 
 
 void Train::followtrack()
