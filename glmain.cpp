@@ -14,7 +14,7 @@ Date: 01/08/09
 #define TRUE  1
 #define MAX_LIGHTS  8
 #define NUM_OBJECTS 8
-#define BOARD_SIZE 4
+#define BOARD_SIZE 8
 #define TILE_SIZE 2
 
 typedef struct _Object {
@@ -2119,7 +2119,7 @@ void draw_tiles()
 			switch(theTiles[i][j]->state)
 			{
 				case 0:
-					draw_tile(cur, BLACK);
+					//draw_tile(cur, BLACK);
 					break;
 				case 1:
 					draw_tile(cur, GREEN);
