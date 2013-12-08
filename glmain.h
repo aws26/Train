@@ -14,6 +14,7 @@ DOES: header file for cs1566 Assignment 4 -- Modeler
 #include "shapeclasses.h"
 
 
+
 #ifndef min //In VC++ 2008, Ryan got a warning about min redefinition, so let's not redefine it if something else already did; sigh
 #define min(a,b) ((a) < (b)? a:b)
 #endif

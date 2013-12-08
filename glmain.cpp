@@ -7,7 +7,10 @@ Date: 01/08/09
 **************************************************************************/
 
 #include "glmain.h"
+#include <string.h>
 #define my_assert(X,Y) ((X)?(void) 0:(printf("error:%s in %s at %d", Y, __FILE__,__LINE__), myabort()))
+
+using namespace std;
 
 #define min(a,b) ((a) < (b)? a:b)
 #define FALSE 0
@@ -16,6 +19,8 @@ Date: 01/08/09
 #define NUM_OBJECTS 8
 #define BOARD_SIZE 8
 #define TILE_SIZE 2
+#define WINDOW_WIDTH 700
+#define WINDOW_HEIGHT 700
 
 typedef struct _Object {
   int sid;
@@ -105,6 +110,8 @@ Train* engine;
 
 float speed_scale;
 
+bool editing=true;
+
 double sph_rad ;
 double cyl_h ;
 double cyl_rad;
@@ -166,7 +173,7 @@ void glut_setup (){
 
   glutInitDisplayMode(GLUT_DOUBLE|GLUT_RGB|GLUT_DEPTH);
 
-  glutInitWindowSize(700,700);
+  glutInitWindowSize(WINDOW_WIDTH,WINDOW_HEIGHT);
   glutInitWindowPosition(20,20);
   glutCreateWindow("CS1566 Project 4");
 
@@ -796,6 +803,17 @@ void real_rotation(Shape3d* sh, GLfloat deg, GLfloat ax, GLfloat ay, GLfloat az,
         }
 }
 
+void cycle_tile_type(int row, int col)
+{
+	int currState = theTiles[row][col]->state;
+	Tile *currTile = theTiles[row][col];
+	currState++;
+	if(currState>12)
+	{
+		currState = 1;
+	}
+	currTile->setstate(currState,speed_scale);
+}
 
 void my_keyboard( unsigned char key, int x, int y ) {
 
@@ -853,8 +871,17 @@ void my_keyboard( unsigned char key, int x, int y ) {
 	}; break;
 
   case ' ':
-    //code to switch between first person view and back as appropriate
-    glutPostRedisplay();
+    //Switch between editing and play
+	  if(editing)
+	  {
+		editing=false;
+		printf("Now in Run mode\n");
+	  }
+	  else
+	  {
+		  editing=true;
+		  printf("Now in Editing mode\n");
+	  }
     break;
   case 'd':
     conetwist(PI/-30);
@@ -1507,8 +1534,7 @@ void my_raytrace(int mousex, int mousey)
         // gluUnProject with a Z value of 1 will find the point on the far clipping plane
         // corresponding the the mouse click. This is not the same as the vector
         // representing the click.
-        gluUnProject(mousex, mousey, 1.0, modelViewMatrix, projMatrix, viewport,
-&clickPoint[0], &clickPoint[1], &clickPoint[2]);
+        gluUnProject(mousex, mousey, 1.0, modelViewMatrix, projMatrix, viewport, &clickPoint[0], &clickPoint[1], &clickPoint[2]);
 
         // Now we need a vector representing the click. It should start at the camera
         // position. We can subtract the click point, we will get the vector
@@ -1579,6 +1605,9 @@ void my_mouse(int button, int state, int mousex, int mousey) {
 
   case GLUT_RIGHT_BUTTON:
     if ( state == GLUT_DOWN ) {
+				my_raytrace(mousex, mousey);
+                ray_enabled = true;
+                glutPostRedisplay();
     }
 
     if( state == GLUT_UP ) {
@@ -1998,7 +2027,6 @@ void draw_objects() {
         }
 }
 
-
 void draw_ray()
 {
         //printf("drawing ray\n");
@@ -2044,7 +2072,6 @@ void draw_ray()
         glEnable(GL_LIGHTING);
 
 }
-
 
 void draw_normals()
 {
@@ -2092,7 +2119,6 @@ void draw_normals()
         glEnable(GL_LIGHTING);
 }
 
-
 void draw_markers()
 {
         
@@ -2105,7 +2131,6 @@ void draw_markers()
                 draw_sphere(mark);
         }
 }
-
 
 void draw_tiles()
 {
@@ -2121,11 +2146,33 @@ void draw_tiles()
 				case 0:
 					//draw_tile(cur, BLACK);
 					break;
-				case 1:
+				case 1://right
 					draw_tile(cur, GREEN);
 					break;
-				default:
+				case 2://left
 					draw_tile(cur, RED);
+					break;
+				case 3://down
+					draw_tile(cur, CYAN);
+					break;
+				case 4://up
+					draw_tile(cur, MAGENTA);
+					break;
+				case 11://curve, bottom to right
+					draw_tile(cur, BLUE);
+					break;
+				case 5://curve, left to bottom
+					draw_tile(cur, YELLOW);
+					break;
+				case 7://curve, top to left
+					draw_tile(cur, WHITE);
+					break;
+				case 9://curve, right to top
+					draw_tile(cur, GREY);
+					break;
+				
+				default:
+					draw_tile(cur, BROWN);
 					break;
 			}
 			cur->rendermode = GL_POLYGON;
@@ -2135,7 +2182,6 @@ void draw_tiles()
     //cur = tileShapes[0][0];
 	//draw_tile(cur, GREEN);
 }
-
 
 void draw_train()
 {
@@ -2176,6 +2222,40 @@ void draw_train()
 
 		cur->rendermode = GL_POLYGON;
 	}
+}
+
+void draw_overlay()
+{
+	glDisable(GL_TEXTURE_2D);
+	glDisable(GL_LIGHTING);
+
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0.0, WINDOW_WIDTH, 0.0, WINDOW_HEIGHT);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	glColor3f(1.0, 0.0, 1.0);
+	glRasterPos2i(10, 10);
+	string s = "A test string!";
+	void * font = GLUT_BITMAP_9_BY_15;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();
+
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_LIGHTING);
 }
 
 
@@ -2221,6 +2301,8 @@ void my_display() {
   {
         draw_markers();
   }
+
+  //draw_overlay();
 
   // this buffer is ready
   glutSwapBuffers();
@@ -2275,6 +2357,13 @@ void my_TimeOut(int id) {
                 update_jump();
                 glutPostRedisplay();
         }
+
+		//check for whether in editting mode or not, only move if not
+		if(!editing)
+		{
+
+
+		}
 
         glutTimerFunc(1000, my_TimeOut, 0);
 
