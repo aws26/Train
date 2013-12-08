@@ -141,11 +141,12 @@ class Train
 {
 public:
        Tile* position; //current tile
-       Shape3d* body; //shape array
+       Shape3d* body[1]; //shape array
+	   int numshapes; // number of shapes in the body
        bool move;  //to move or not, for more use later
        int movecount; //how many moves so far
        int maxmoves; //moves to get across tile
-       Tile* map[5][5];
+       //Tile* map[5][5];
 
        Train(Tile*);
        //void maketiles();

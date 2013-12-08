@@ -1001,13 +1001,23 @@ Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
 
 Train::Train(Tile* p)
 {
-       move = true;
-       maxmoves = 8;  // this is the default moves to get across the tile, maybe change later
-       body = new Shape3d(CUBE);
-       body->make_cube(1);
-       position = p;  //starting tile
+    position = p;  //starting tile   
+	move = true; 
+	maxmoves = 8;  // this is the default moves to get across the tile, maybe change later
 
-       //maketiles();
+	body[0] = new Shape3d(CUBE);
+	body[0]->make_cube(1);
+
+	Matrix* m = new Matrix();
+	m->grid[0][3] = 1.0;
+	m->grid[2][3] = 1.0;
+
+	body[0]->ctm = body[0]->ctm->multiply(m);
+	body[0]->transform(2,4);
+	body[0]->cubeface();
+
+	numshapes = 1;
+
 }
 
 
@@ -1018,21 +1028,24 @@ Train::Train(Tile* p)
 
 void Train::followtrack()
 {
-       int* row;
-int* col;
+	int* row;
+	int* col;
 
-       while(move)
-       {
-               movecount = 0;
+	while(move)
+	{
+		movecount = 0;
 
-               while(movecount < maxmoves)
-               {
-                       body->ctm = body->ctm->multiply(position->movement);
-                       movecount++;
-               }
+		while(movecount < maxmoves)
+		{
+			for(int a=0; a<numshapes; a++)
+			{
+				body[a]->ctm = body[a]->ctm->multiply(position->movement);
+				movecount++;
+			}
+		}
 
-               position->getnext(row, col);
-               position = map[*row][*col];
-       }
+		position->getnext(row, col);
+		//position = map[*row][*col];
+	}
 }
 

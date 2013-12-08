@@ -101,7 +101,9 @@ Tile* theTiles[BOARD_SIZE][BOARD_SIZE];
 Shape3d* tileShapes[BOARD_SIZE][BOARD_SIZE];
 Matrix movement_list[12];
 
-float movement_scale;
+Train* engine;
+
+float speed_scale;
 
 double sph_rad ;
 double cyl_h ;
@@ -246,7 +248,9 @@ void my_setup(int argc, char **argv){
   my_assert(argc >1, "need to supply a spec file");
   read_spec(argv[1]);
 
-  init_movement();
+  speed_scale = 1.0; // probably change later
+
+  engine = new Train(theTiles[0][0]);
 
   return;
 }
@@ -458,7 +462,7 @@ void parse_tile(char *buffer)
 
   //printf("ceate tile (%d, %d) at position (%d, %d) with state %d\n", i, j, row, col, stateI);
   //creates the tile object
-  theTiles[i][j] = new Tile(row,col,stateI,0.0);
+  theTiles[i][j] = new Tile(row,col,stateI, speed_scale);
   currTile++;
 
   //creates the tile shape (cube)
@@ -556,34 +560,6 @@ void lighting_setup () {
       glLightfv(GL_LIGHT0+i, GL_SPOT_DIRECTION, my_lights[i].dir);
     }
   }
-
-}
-
-
-void init_movement()
-{
-	movement_scale = 1.0; // probably something different
-
-	for(int a=0; a<12; a++)
-	{
-		movement_list[a] = *(new Matrix());
-	}
-
-	//state 0, fall
-	movement_list[0].grid[1][3] = -1.0;
-
-	//state 1, right
-	movement_list[1].grid[0][3] = 1.0;
-
-	//state 2, left
-	movement_list[2].grid[0][3] = -1.0;
-
-	//state 3, down
-	movement_list[3].grid[2][3] = 1.0;
-
-	//state 4, up
-	movement_list[4].grid[2][3] = -1.0;
-
 
 }
 
@@ -2143,7 +2119,7 @@ void draw_tiles()
 			switch(theTiles[i][j]->state)
 			{
 				case 0:
-					//draw_tile(cur, BLACK);
+					draw_tile(cur, BLACK);
 					break;
 				case 1:
 					draw_tile(cur, GREEN);
@@ -2158,6 +2134,48 @@ void draw_tiles()
 	//Shape3d *cur;
     //cur = tileShapes[0][0];
 	//draw_tile(cur, GREEN);
+}
+
+
+void draw_train()
+{
+	Shape3d* cur;
+
+	for(int i=0; i<engine->numshapes; i++)
+	{
+		cur = engine->body[i];
+
+                /*glMaterialfv(GL_FRONT, GL_AMBIENT, cur->amb);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, cur->diff);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, cur->spec);
+                glMaterialfv(GL_FRONT, GL_SHININESS, &cur->shine);*/
+                //glMaterialfv(GL_FRONT, GL_EMISSION, cur->emi);
+
+		switch(cur->type)
+		{
+			case 1: //cube
+				draw_cube(cur);
+				break;
+			case 2: //house
+				draw_house(cur);
+				break;
+			case 3: //sphere
+				draw_sphere(cur);
+				break;
+			case 4: //cylinder
+				draw_cylinder(cur);
+				break;
+			case 5: //cone
+				draw_cone(cur);
+				break;
+			case 6: //torus
+				draw_torus(cur);
+				break;
+			default: break;
+		}
+
+		cur->rendermode = GL_POLYGON;
+	}
 }
 
 
@@ -2185,6 +2203,8 @@ void my_display() {
   draw_objects();
 
   draw_tiles();
+
+  draw_train();
 
   if(norms_enabled)
   {
