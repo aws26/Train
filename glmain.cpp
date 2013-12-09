@@ -260,6 +260,7 @@ void my_setup(int argc, char **argv){
         jump_enabled = false;
         jumpcount = 0;
 
+	speed_scale = 1.0; // probably change later
   //If you want to allow the user to type in the spec file
   //then modify the following code.
   //Otherwise, the program will attempt to load the file as specified
@@ -267,8 +268,6 @@ void my_setup(int argc, char **argv){
   //EX: ./glmain spec3
   my_assert(argc >1, "need to supply a spec file");
   read_spec(argv[1]);
-
-  speed_scale = 1.0; // probably change later
 
   engine = new Train(theTiles[1][1]);
 
@@ -512,21 +511,27 @@ void parse_tile(char *buffer)
   int stateI = atoi(strtok(state, " "));
 
 
-  int i = currTile % BOARD_SIZE;
-  int j = int(currTile / BOARD_SIZE);
+  //int i = currTile % BOARD_SIZE;
+  //int j = int(currTile / BOARD_SIZE);
 
-  //printf("ceate tile (%d, %d) at position (%d, %d) with state %d\n", i, j, row, col, stateI);
+  //printf("ceate tile at position (%d, %d) with state %d\n", row, col, stateI);
   //creates the tile object
-  theTiles[i][j] = new Tile(row,col,stateI, speed_scale);
+  theTiles[row][col] = new Tile(row,col,stateI, speed_scale);
   currTile++;
 
   //creates the tile shape (cube)
-  tileShapes[i][j] = new Shape3d(CUBE);
-  Shape3d* sh = tileShapes[i][j];
+  tileShapes[row][col] = new Shape3d(CUBE);
+  Shape3d* sh = tileShapes[row][col];
 
   sh->make_cube(TILE_SIZE);
   real_scaling(sh, 1.0, .25, 1.0);
-  real_translation(sh, (float(TILE_SIZE) + float(i*2*TILE_SIZE)), -float(TILE_SIZE/4.0), (float(TILE_SIZE) + float(j*2*TILE_SIZE)));
+  real_translation(sh, (float(TILE_SIZE) + float(row*2*TILE_SIZE)), -float(TILE_SIZE/4.0), (float(TILE_SIZE) + float(col*2*TILE_SIZE)));
+
+  //printf("tile %d, %d: state is %d, movement is\n", row, col, stateI);
+  //theTiles[row][col]->movement->printmatrix();
+  //printf("\n");
+
+  //getchar();
 }
 
 /* assuming the spec is going to be properly written
@@ -2676,13 +2681,17 @@ void my_TimeOut(int id) {
 		else
 		{
 			//printf("end of tile****************************\n");
-			engine->movecount = 0;
-			int r = engine->position->getnext(0);
-			int c = engine->position->getnext(1);
+			if(engine->position->state != 0)
+			{
+				engine->movecount = 0;
 
-			printf("r is %d, c is %d", r, c);
+				int r = engine->position->getnext(0);
+				int c = engine->position->getnext(1);
 
-			engine->position = theTiles[r][c];
+				printf("r is %d, c is %d", r, c);
+
+				engine->position = theTiles[r][c];
+			}
 		}
 	}
 

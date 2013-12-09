@@ -901,14 +901,17 @@ void Tile::setspeed(float sp)
 
 void Tile::setstate(int s, float sp) //incomplete
 {
+	printf("state is %d, speed is %f\n", s, sp);
 	state = s;
 	movement = new Matrix();
 
 	switch(state)
 	{
 		case 0: //fall
+			printf("here in case 0\n");
 			movement->grid[1][3] = -1.0 * sp; break;
 		case 1: //right
+			printf("here in case 1\n");
 			movement->grid[0][3] = 1.0 * sp; break;
 		case 2: //left
 			movement->grid[0][3] = -1.0 * sp; break;
@@ -917,6 +920,7 @@ void Tile::setstate(int s, float sp) //incomplete
 		case 4: //up
 			movement->grid[2][3] = -1.0 * sp; break;
 		case 5: //clockwise to down
+			printf("here in case 5\n");
 			movement = &get_rotate(corners[0], sp, -1.0); break;
 		case 6: //counterclockwise to left
 			movement = &get_rotate(corners[0], sp, 1.0); break;
@@ -929,6 +933,7 @@ void Tile::setstate(int s, float sp) //incomplete
 		case 10: //counterclockwise to right
 			movement = &get_rotate(corners[2], sp, 1.0); break;
 		case 11: //clockwise to right
+			printf("here in case 11\n");
 			movement = &get_rotate(corners[3], sp, -1.0); break;
 		case 12: //counterclockwise to down
 			movement = &get_rotate(corners[3], sp, 1.0); break;
