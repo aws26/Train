@@ -8,10 +8,13 @@ Date: 01/08/09
 
 #include "glmain.h"
 #include <string.h>
+#include <windows.h>
+
 #define my_assert(X,Y) ((X)?(void) 0:(printf("error:%s in %s at %d", Y, __FILE__,__LINE__), myabort()))
 
 using namespace std;
 
+#define GL_CLAMP_TO_EDGE 0x812F
 #define min(a,b) ((a) < (b)? a:b)
 #define FALSE 0
 #define TRUE  1
@@ -21,6 +24,8 @@ using namespace std;
 #define TILE_SIZE 2
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 700
+
+//typedef unsigned char BYTE;
 
 typedef struct _Object {
   int sid;
@@ -157,12 +162,10 @@ int main(int argc, char** argv)
   setbuf(stdout, NULL);   /* for writing to stdout asap */
   glutInit(&argc, argv);
 
-  glGenTextures(1, &straight);
-  glGenTextures(2, &curve);
-
   my_setup(argc, argv);
   glut_setup();
   gl_setup();
+  texture_setup();
 
   printf("Command List:\n");
   printf("Camera movement modes (hold):\n");
@@ -272,7 +275,32 @@ void my_setup(int argc, char **argv){
   return;
 }
 
+void texture_setup()
+{
+	glGenTextures(1, &straight);
+	glGenTextures(2, &curve);
+	glBindTexture( GL_TEXTURE_2D, straight );
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
+	/*int width, height;
+	BYTE * data;
+	FILE * file;
+
+	// texture data
+	width = 256;
+	height = 256;
+
+	// allocate buffer
+	data = malloc( width * height * 3 );
+
+	// open and read texture data
+	file = fopen( "straight.ppm", "rb" );
+	fread( data, width * height * 3, 1, file );
+	fclose( file );*/
+
+}
 
 void parse_floats(char *buffer, GLfloat nums[]) {
   int i;

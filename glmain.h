@@ -49,6 +49,7 @@ void glut_setup(void) ;
 void gl_setup(void) ;
 void my_init(int argc, char **argv);
 void my_setup(int argc, char **argv);
+void texture_setup(void);
 void myabort(void);
 void my_display(void) ;
 void my_mouse(int button, int state, int mousex, int mousey) ;
