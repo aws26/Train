@@ -284,22 +284,32 @@ void texture_setup()
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-	/*int width, height;
-	BYTE * data;
+	int width = 256;
+	int height = 256;
+	//char * data;
 	FILE * file;
+	void * data = malloc(width * height * 3);
 
-	// texture data
-	width = 256;
-	height = 256;
-
-	// allocate buffer
-	data = malloc( width * height * 3 );
-
-	// open and read texture data
 	file = fopen( "straight.ppm", "rb" );
 	fread( data, width * height * 3, 1, file );
-	fclose( file );*/
+	fclose( file );
 
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 1, GL_RGB, GL_UNSIGNED_BYTE, data );
+	free(data);
+
+	glBindTexture( GL_TEXTURE_2D, curve );
+	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+	data = malloc(width * height * 3);
+
+	file = fopen( "curve.ppm", "rb" );
+	fread( data, width * height * 3, 1, file );
+	fclose( file );
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 1, GL_RGB, GL_UNSIGNED_BYTE, data );
+	free(data);
 }
 
 void parse_floats(char *buffer, GLfloat nums[]) {
@@ -1838,8 +1848,7 @@ void make_cube_smart(OBJECT *po, double size){
  For the normal to work out, follow left-hand-rule (i.e., counter clock
  wise)
 *************************************/
-void draw_quad(GLfloat vertices[][4], GLfloat *normals, int iv1, int iv2, int iv3,
-int iv4, int ic) {
+void draw_quad(GLfloat vertices[][4], GLfloat *normals, int iv1, int iv2, int iv3,int iv4, int ic) {
   glBegin(crt_render_mode);
   {
     glColor3fv(colors[ic]);
@@ -1932,8 +1941,180 @@ void draw_cube(Shape3d* thecube)
         }
 }
 
+
+void draw_text_face(Face f, int ic, int mode, int state) {
+	glEnable( GL_TEXTURE_2D );
+	/*GLfloat tex_coords[4][2];
+	switch(state)
+	{
+		//GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
+		case '1':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '2':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '3':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '4':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '5':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '6':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '7':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '8':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+		case '9':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '10':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '11':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		case '12':
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			break;
+		default:
+			glBindTexture( GL_TEXTURE_2D, straight );
+			tex_coords[0][0] = 0;
+			tex_coords[0][1] = 0;
+			tex_coords[1][0] = 1;
+			tex_coords[1][1] = 0;
+			tex_coords[2][0] = 1;
+			tex_coords[2][1] = 1;
+			tex_coords[3][0] = 0;
+			tex_coords[3][1] = 1;
+			printf("error\n");
+			break;
+	}*/
+	
+	
+	GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
+	glBindTexture( GL_TEXTURE_2D, straight );
+	glBegin(mode);
+	{
+		glColor3fv(colors[ic]);
+		glTexCoord2fv(tex_coords[0]); 
+		glVertex4fv(f.corners[0]->coords);
+		glTexCoord2fv(tex_coords[1]); 
+		glVertex4fv(f.corners[1]->coords);
+		glTexCoord2fv(tex_coords[2]); 
+		glVertex4fv(f.corners[2]->coords);
+		glTexCoord2fv(tex_coords[3]); 
+		//glVertex4fv(f.corners[3]->coords);
+	}
+	glEnd();
+	
+	glDisable( GL_TEXTURE_2D );
+}
+
 //copy of draw_cube, but allows to color choosing, will use texturing later
-void draw_tile(Shape3d* thecube, int color)
+void draw_tile(Shape3d* thecube, int color, int state)
 {
         //printf("i should draw a cube\n");
         for (int i=0; i<thecube->facecount; i++)
@@ -1950,7 +2131,7 @@ void draw_tile(Shape3d* thecube, int color)
                         case 6:
                         case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
                         case 8:
-                        case 9: my_draw_triangle(*(thecube->facelist[i]), color, thecube->rendermode); break;//top
+                        case 9: draw_text_face(*(thecube->facelist[i]), color, thecube->rendermode, state); break;//top
                         case 10:
                         case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
                 }
@@ -2263,38 +2444,39 @@ void draw_tiles()
 			Shape3d *cur;
             cur = tileShapes[i][j];
 			//switch color based on the state of the tile
-			switch(theTiles[i][j]->state)
+			int currState = theTiles[i][j]->state;
+			switch(currState)
 			{
 				case 0:
 					//draw_tile(cur, BLACK);
 					break;
 				case 1://right
-					draw_tile(cur, GREEN);
+					draw_tile(cur, GREEN, currState);
 					break;
 				case 2://left
-					draw_tile(cur, RED);
+					draw_tile(cur, RED, currState);
 					break;
 				case 3://down
-					draw_tile(cur, CYAN);
+					draw_tile(cur, CYAN, currState);
 					break;
 				case 4://up
-					draw_tile(cur, MAGENTA);
+					draw_tile(cur, MAGENTA, currState);
 					break;
 				case 11://curve, bottom to right
-					draw_tile(cur, BLUE);
+					draw_tile(cur, BLUE, currState);
 					break;
 				case 5://curve, left to bottom
-					draw_tile(cur, YELLOW);
+					draw_tile(cur, YELLOW, currState);
 					break;
 				case 7://curve, top to left
-					draw_tile(cur, WHITE);
+					draw_tile(cur, WHITE, currState);
 					break;
 				case 9://curve, right to top
-					draw_tile(cur, GREY);
+					draw_tile(cur, GREY, currState);
 					break;
 				
 				default:
-					draw_tile(cur, BROWN);
+					draw_tile(cur, BROWN, currState);
 					break;
 			}
 			cur->rendermode = GL_POLYGON;
@@ -2398,7 +2580,7 @@ void my_display() {
   glRotatef(theta_z,0,0,1);
 
   //update the flashlight to follow the person
-
+  glDisable( GL_TEXTURE_2D );
   //draw the objects
   draw_axes();
 
