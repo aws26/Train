@@ -3,6 +3,7 @@
 #include <iostream>
 #include <math.h> 
 #include <GL/glut.h>
+#include <fstream>
 
 #define PI 3.14159
 #define TWOPI 6.28319
