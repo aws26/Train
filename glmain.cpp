@@ -165,7 +165,7 @@ int main(int argc, char** argv)
   my_setup(argc, argv);
   glut_setup();
   gl_setup();
-  texture_setup();
+  //texture_setup();
 
   printf("Command List:\n");
   printf("Camera movement modes (hold):\n");
@@ -270,7 +270,7 @@ void my_setup(int argc, char **argv){
 
   speed_scale = 1.0; // probably change later
 
-  engine = new Train(theTiles[0][0]);
+  engine = new Train(theTiles[1][1]);
 
   return;
 }
@@ -2663,13 +2663,31 @@ void my_TimeOut(int id) {
         }
 
 		//check for whether in editting mode or not, only move if not
-		if(!editing)
+	if(!editing)
+	{
+		//printf("move code\n");
+		//printf("movecount is %d, maxmoves is %d\n", engine->movecount, engine->maxmoves);
+
+		if(engine->movecount < engine->maxmoves)
 		{
-
-
+			//printf("follow track\n");
+			engine->followtrack();
 		}
+		else
+		{
+			//printf("end of tile****************************\n");
+			engine->movecount = 0;
+			int r = engine->position->getnext(0);
+			int c = engine->position->getnext(1);
 
-        glutTimerFunc(1000, my_TimeOut, 0);
+			printf("r is %d, c is %d", r, c);
+
+			engine->position = theTiles[r][c];
+		}
+	}
+
+        //glutTimerFunc(1000, my_TimeOut, 0);
+	glutTimerFunc(1000, my_TimeOut, 0);
 
         return ;
 }

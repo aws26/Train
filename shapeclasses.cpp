@@ -276,6 +276,9 @@ void Shape3d::make_cube(double size)
        bot = new Vertex3d(0, -1 * size, 0);
        top = new Vertex3d(0, size, 0);
 
+	   shapevs = 2;
+	   shapers = 4;
+
        transform(2, 4);
 
        makeface(1,1);
@@ -297,14 +300,20 @@ void Shape3d::make_house(float size)
        bot = new Vertex3d(0, -1 * size, 0);
        top = new Vertex3d(0, size *1.5, 0);
 
-       transform(2, 4);
+       shapevs = 3;
+	   shapers = 4;
+
+	   transform(2, 4);
 
        makeface(1,1);
 }
 
 void Shape3d::make_cylinder(double height, double ray, int rs, int vs ) 
 {
-       Vertex3d* ringbase;
+    shapevs = vs;
+	shapers = rs;
+
+	Vertex3d* ringbase;
        double thisy, theta;
        double yspace = height/vs; // distance between each ring along y axis
        double rspace = TWOPI/rs;
@@ -337,7 +346,10 @@ void Shape3d::make_cylinder(double height, double ray, int rs, int vs )
 
 void Shape3d::make_sphere( double ray, int rs, int vs ) 
 {
-       Vertex3d* ringbase;
+    shapevs = vs;
+	shapers = rs;
+
+	Vertex3d* ringbase;
        double ztheta, ytheta;
 
        Vertex3d* base = new Vertex3d(0, ray, 0);
@@ -379,7 +391,10 @@ faces)
 
 void Shape3d::make_cone(double height, double ray, int rs, int vs)
 {
-       Vertex3d* ringbase;
+    shapevs = vs;
+	shapers = rs;
+
+	Vertex3d* ringbase;
        double rise, currad, ytheta;
 
        Vertex3d* base = new Vertex3d(0, (height/-2), 0);
@@ -419,7 +434,10 @@ void Shape3d::make_cone(double height, double ray, int rs, int vs)
 ************************************/
 void Shape3d::make_torus(double width, double ray, int rs, int vs)
 {
-       Vertex3d* hold;
+    shapevs = vs;
+	shapers = rs;
+
+	Vertex3d* hold;
 
        Vertex3d* base = new Vertex3d(ray, 0, 0);
        double ringturn = TWOPI/vs;
@@ -864,9 +882,14 @@ Tile::Tile()
 
 Tile::Tile(int r, int c, int s, float sp)
 {
-       row = r;
-       col = c;
-       setstate(s, sp);
+	row = r;
+	col = c;
+	setstate(s, sp);
+
+	corners[0] = *(new Vertex3d((c * 4), 0, ((r * 4) + 4))); // bottom left corner
+	corners[1] = *(new Vertex3d((c * 4), 0, (r * 4))); // top left corner
+	corners[2] = *(new Vertex3d(((c * 4) + 4), 0, (r * 4))); // top right corner
+	corners[3] = *(new Vertex3d(((c * 4) + 4), 0, ((r * 4) + 4))); // bottom right corner
 }
 
 
@@ -913,7 +936,7 @@ void Tile::setstate(int s, float sp) //incomplete
 	   }
 }
 
-void Tile::getnext(int* a, int*b)
+/*void Tile::getnext(int* a, int*b)
 {
        int r = row;
        int c = col;
@@ -947,6 +970,38 @@ void Tile::getnext(int* a, int*b)
                r--;
                a = &r;
                b = &c;
+               break;
+       default: break;
+       }
+}*/
+
+
+int Tile::getnext(int flag) // 0 is row, 1 is col
+{
+      // int r = row;
+       //int c = col;
+
+       switch(state)
+       {
+       case(1): //to the right
+       case(10):
+       case(11):
+               return row + 1;
+               break;
+       case(3): //down
+       case(5):
+       case(12):
+               return col + 1;
+               break;
+       case(2): //to the left
+       case(6):
+       case(7):
+               return row - 1;
+               break;
+       case(4): //up
+       case(8):
+       case(9):
+               return col - 1;
                break;
        default: break;
        }
@@ -1004,13 +1059,15 @@ Train::Train(Tile* p)
     position = p;  //starting tile   
 	move = true; 
 	maxmoves = 8;  // this is the default moves to get across the tile, maybe change later
+	movecount = 0;
 
 	body[0] = new Shape3d(CUBE);
 	body[0]->make_cube(1);
 
 	Matrix* m = new Matrix();
-	m->grid[0][3] = 1.0;
-	m->grid[2][3] = 1.0;
+	m->grid[0][3] = 6.0;
+	m->grid[1][3] = 1.0;
+	m->grid[2][3] = 6.0;
 
 	body[0]->ctm = body[0]->ctm->multiply(m);
 	body[0]->transform(2,4);
@@ -1026,7 +1083,7 @@ Train::Train(Tile* p)
 }*/
 
 
-void Train::followtrack()
+/*void Train::followtrack()
 {
 	int* row;
 	int* col;
@@ -1047,5 +1104,18 @@ void Train::followtrack()
 		position->getnext(row, col);
 		//position = map[*row][*col];
 	}
-}
+}*/
 
+
+void Train::followtrack()
+{
+	position->movement->printmatrix();
+	printf("\n");
+	for(int a=0; a<numshapes; a++)
+	{
+		body[a]->ctm = body[a]->ctm->multiply(position->movement);
+		body[a]->transform(body[a]->shapevs, body[a]->shapers);
+		body[a]->makeface(body[a]->shapevs, body[a]->shapers);
+	}
+		movecount++;
+}

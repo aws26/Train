@@ -134,7 +134,7 @@ public:
        Tile(int,int,int,float);
        void setstate(int, float);
 	   void setspeed(float);
-       void getnext(int*, int*);
+       int getnext(int);
 	   Matrix get_rotate(Vertex3d, float,float);
 };
 
