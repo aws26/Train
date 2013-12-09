@@ -106,6 +106,12 @@ Tile* theTiles[BOARD_SIZE][BOARD_SIZE];
 Shape3d* tileShapes[BOARD_SIZE][BOARD_SIZE];
 Matrix movement_list[12];
 
+int sel_row = -1;
+int sel_col = -1;
+
+GLuint straight;
+GLuint curve;
+
 Train* engine;
 
 float speed_scale;
@@ -151,6 +157,9 @@ int main(int argc, char** argv)
   setbuf(stdout, NULL);   /* for writing to stdout asap */
   glutInit(&argc, argv);
 
+  glGenTextures(1, &straight);
+  glGenTextures(2, &curve);
+
   my_setup(argc, argv);
   glut_setup();
   gl_setup();
@@ -183,6 +192,7 @@ void glut_setup (){
   glutMouseFunc(my_mouse);
   glutMotionFunc(my_mouse_drag);
   glutKeyboardFunc(my_keyboard);
+  glutKeyboardUpFunc(my_keyboard_up);
   glutIdleFunc( my_idle );
   glutTimerFunc( 1000, my_TimeOut, 0);
 
@@ -803,17 +813,28 @@ void real_rotation(Shape3d* sh, GLfloat deg, GLfloat ax, GLfloat ay, GLfloat az,
         }
 }
 
+
 void cycle_tile_type(int row, int col)
 {
-	int currState = theTiles[row][col]->state;
-	Tile *currTile = theTiles[row][col];
-	currState++;
-	if(currState>12)
+	//printf("cycle tile\n");
+	if(editing)
 	{
-		currState = 1;
+		if(col != -1)
+		{
+			int currState = theTiles[col][row]->state;
+			Tile *currTile = theTiles[col][row];
+			currState++;
+			if(currState>12)
+			{
+				currState = 1;
+			}
+			currTile->setstate(currState,speed_scale);
+
+			glutPostRedisplay();
+		}
 	}
-	currTile->setstate(currState,speed_scale);
 }
+
 
 void my_keyboard( unsigned char key, int x, int y ) {
 
@@ -869,6 +890,66 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		}
 		glutPostRedisplay(); 
 	}; break;
+	
+
+	case 'a':
+		sel_col=0;
+		break;
+	case 'b':
+		sel_col=1;
+		break;
+	case 'c':
+		sel_col=2;
+		break;
+	case 'd':
+		sel_col=3;
+		break;
+	case 'e':
+		sel_col=4;
+		break;
+	case 'f':
+		sel_col=5;
+		break;
+	case 'g':
+		sel_col=6;
+		break;
+	case 'h':
+		sel_col=7;
+		break;
+
+	case '0':
+		sel_row=0;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '1':
+		sel_row=1;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '2':
+		sel_row=2;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '3':
+		sel_row=3;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '4':
+		sel_row=4;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '5':
+		sel_row=5;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '6':
+		sel_row=6;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+	case '7':
+		sel_row=7;
+		cycle_tile_type(sel_row,sel_col);
+		break;
+
 
   case ' ':
     //Switch between editing and play
@@ -883,7 +964,7 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		  printf("Now in Editing mode\n");
 	  }
     break;
-  case 'd':
+  /*case 'd':
     conetwist(PI/-30);
     glutPostRedisplay() ;
     break;
@@ -912,7 +993,7 @@ void my_keyboard( unsigned char key, int x, int y ) {
     break;
   case 'j':
     jump_enabled = true;
-    break;
+    break;*/
   case 'q':
   case 'Q':
     exit(0) ;
@@ -939,6 +1020,19 @@ void my_keyboard_up( unsigned char key, int x, int y )
 	case 'R':
 	case 'r': {
 		camera_mode = NONE_MODE;
+		break;
+		}
+	
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+	case 'e':
+	case 'f':
+	case 'g':
+	case 'h': {
+		sel_col = -1;
+		//printf("key up\n");
 		break;
 		}
 	}
@@ -1594,9 +1688,9 @@ void my_mouse(int button, int state, int mousex, int mousey) {
     if( state == GLUT_DOWN ) {
 
                 //my_raytrace(mousex, mousey);
-                my_raytrace();
-                ray_enabled = true;
-                glutPostRedisplay();
+               // my_raytrace();
+                //ray_enabled = true;
+                //glutPostRedisplay();
     }
 
     if( state == GLUT_UP ) {
