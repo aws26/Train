@@ -890,6 +890,15 @@ Tile::Tile(int r, int c, int s, float sp)
 	corners[2] = *(new Vertex3d(((c * 4) + 4), 0, (r * 4))); // top right corner
 	corners[3] = *(new Vertex3d(((c * 4) + 4), 0, ((r * 4) + 4))); // bottom right corner
 
+	printf("tile (%d, %d), state %d, corners:\n", r, c, s);
+
+	for (int a=0; a<4; a++)
+	{
+		corners[a].printvertex();
+	}
+
+	printf("\n");
+
 	setstate(s, sp);
 }
 
@@ -909,31 +918,15 @@ void Tile::setstate(int s, float sp) //incomplete
 	switch(state)
 	{
 		case 0: //fall
-			movement->grid[1][3] = -1.0 * sp; break;
+			movement->grid[1][3] = -0.5 * sp; break;
 		case 1: //right
-			movement->grid[0][3] = 1.0 * sp; break;
+			movement->grid[0][3] = 0.5 * sp; break;
 		case 2: //left
-			movement->grid[0][3] = -1.0 * sp; break;
+			movement->grid[0][3] = -0.5 * sp; break;
 		case 3: //down
-			movement->grid[2][3] = 1.0 * sp; break;
+			movement->grid[2][3] = 0.5 * sp; break;
 		case 4: //up
-			movement->grid[2][3] = -1.0 * sp; break;
-		/*case 5: //clockwise to down
-			movement = &get_rotate(corners[0], sp, -1.0); break;
-		case 6: //counterclockwise to left
-			movement = &get_rotate(corners[0], sp, 1.0); break;
-		case 7: //clockwise to left
-			movement = &get_rotate(corners[1], sp, -1.0); break;
-		case 8: //counterclockwise to up
-			movement = &get_rotate(corners[1], sp, 1.0); break;
-		case 9: //clockwise to up
-			movement = &get_rotate(corners[2], sp, -1.0); break;
-		case 10: //counterclockwise to right
-			movement = &get_rotate(corners[2], sp, 1.0); break;
-		case 11: //clockwise to right
-			movement = &get_rotate(corners[3], sp, -1.0); break;
-		case 12: //counterclockwise to down
-			movement = &get_rotate(corners[3], sp, 1.0); break;*/
+			movement->grid[2][3] = -0.5 * sp; break;
 		case 5: //clockwise to down
 			movement = get_rotate(corners[0], sp, -1.0); break;
 		case 6: //counterclockwise to left
@@ -996,33 +989,40 @@ void Tile::setstate(int s, float sp) //incomplete
 
 int Tile::getnext(int flag) // 0 is row, 1 is col
 {
-      // int r = row;
-       //int c = col;
+      int r = row;
+      int c = col;
 
-       switch(state)
-       {
-       case(1): //to the right
-       case(10):
-       case(11):
-               return row + 1;
-               break;
-       case(3): //down
+	switch(state)
+	{
+	case(1): //to the right
+	case(10):
+	case(11):
+		r++;
+		break;
+	case(3): //down
        case(5):
        case(12):
-               return col + 1;
+               c++;
                break;
        case(2): //to the left
        case(6):
        case(7):
-               return row - 1;
+               r--;
                break;
        case(4): //up
        case(8):
        case(9):
-               return col - 1;
+               c--;
                break;
        default: break;
        }
+
+	if(flag == 0)
+	{
+		return r;
+	}
+	else
+		return c;
 }
 
 
@@ -1040,12 +1040,6 @@ Matrix* Tile::get_rotate(Vertex3d bot, float sp, float dir)
 	result->grid[1][3] = -1.0 * bot.coords[1];
 	result->grid[2][3] = -1.0 * bot.coords[2];
 
-	printf("bot is\n");
-	bot.printvertex();
-
-	printf("rotate result 1 is:\n");
-	result->printmatrix();
-	printf("\n");
 
 	float ux = 0.0; // get direction
 	float uy = 1.0;
@@ -1067,9 +1061,6 @@ Matrix* Tile::get_rotate(Vertex3d bot, float sp, float dir)
 
 	result = result->multiply(m);  // multiply rotation matrix in
 
-	printf("rotate result 2 is:\n");
-	result->printmatrix();
-	printf("\n");
 
 	m = new Matrix(); // third matrix, translate back
 
@@ -1079,9 +1070,6 @@ Matrix* Tile::get_rotate(Vertex3d bot, float sp, float dir)
 
 	result = result->multiply(m);  // multiply translation matrix in
 
-	printf("rotate result 3 is:\n");
-	result->printmatrix();
-	printf("\n");
 
 	return result;
 }
@@ -1144,6 +1132,24 @@ void Train::followtrack()
 {
 	position->movement->printmatrix();
 	printf("\n");
+
+	switch(position->state)
+	{
+		case 5: //clockwise to down
+		case 6: //counterclockwise to left
+			position->corners[0].printvertex(); break;
+		case 7: //clockwise to left
+		case 8: //counterclockwise to up
+			position->corners[1].printvertex(); break;
+		case 9: //clockwise to up
+		case 10: //counterclockwise to right
+			position->corners[2].printvertex(); break;
+		case 11: //clockwise to right
+		case 12: //counterclockwise to down
+			position->corners[3].printvertex(); break;
+	   default: break;
+	   }
+
 	for(int a=0; a<numshapes; a++)
 	{
 		body[a]->ctm = body[a]->ctm->multiply(position->movement);
