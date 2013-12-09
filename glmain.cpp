@@ -7,7 +7,6 @@ Date: 01/08/09
 **************************************************************************/
 
 #include "glmain.h"
-#include <string.h>
 #include <windows.h>
 
 #define my_assert(X,Y) ((X)?(void) 0:(printf("error:%s in %s at %d", Y, __FILE__,__LINE__), myabort()))
@@ -22,6 +21,7 @@ using namespace std;
 #define NUM_OBJECTS 8
 #define BOARD_SIZE 8
 #define TILE_SIZE 2
+#define TEXTURE_SIZE 256
 #define WINDOW_WIDTH 700
 #define WINDOW_HEIGHT 700
 
@@ -84,6 +84,10 @@ GLfloat vertices_axes[][4] = {
 
 };
 
+GLuint straight;
+GLuint curve1;
+GLuint curve2;
+
 void make_cube_smart(OBJECT *po, double size );
 
 void real_translation(OBJECT *po, GLfloat x, GLfloat y, GLfloat z);
@@ -114,8 +118,6 @@ Matrix movement_list[12];
 int sel_row = -1;
 int sel_col = -1;
 
-GLuint straight;
-GLuint curve;
 
 Train* engine;
 
@@ -165,7 +167,7 @@ int main(int argc, char** argv)
   my_setup(argc, argv);
   glut_setup();
   gl_setup();
-  //texture_setup();
+  texture_setup();
 
   printf("Command List:\n");
   printf("Camera movement modes (hold):\n");
@@ -274,41 +276,59 @@ void my_setup(int argc, char **argv){
   return;
 }
 
+float * read_in_ppm(string filename)
+{
+	float texturePixels[TEXTURE_SIZE*TEXTURE_SIZE*3];
+	string line;
+	ifstream myfile(filename);
+	float temp;
+	if (myfile.is_open())
+	{
+		getline(myfile,line);
+		getline(myfile,line);
+		getline(myfile,line);
+		getline(myfile,line);
+		for(int i=0; i<(TEXTURE_SIZE*TEXTURE_SIZE*3);i++)
+		{
+			getline(myfile,line);
+			texturePixels[i] = atof(line.c_str()) / 255.0;
+			//printf("%f\n",texPixels[i]);
+		}
+	}
+	return texturePixels;
+}
+
 void texture_setup()
 {
 	glGenTextures(1, &straight);
-	glGenTextures(2, &curve);
-	glBindTexture( GL_TEXTURE_2D, straight );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+	glBindTexture(GL_TEXTURE_2D, straight);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	float * texPixels = read_in_ppm("straight.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGB, GL_FLOAT, texPixels);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	int width = 256;
-	int height = 256;
-	//char * data;
-	FILE * file;
-	void * data = malloc(width * height * 3);
+	glGenTextures(2, &curve1);
+	glBindTexture(GL_TEXTURE_2D, curve1);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	texPixels = read_in_ppm("curve1.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGB, GL_FLOAT, texPixels);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
-	file = fopen( "straight.ppm", "rb" );
-	fread( data, width * height * 3, 1, file );
-	fclose( file );
-
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 1, GL_RGB, GL_UNSIGNED_BYTE, data );
-	free(data);
-
-	glBindTexture( GL_TEXTURE_2D, curve );
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-	data = malloc(width * height * 3);
-
-	file = fopen( "curve.ppm", "rb" );
-	fread( data, width * height * 3, 1, file );
-	fclose( file );
-
-	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 1, GL_RGB, GL_UNSIGNED_BYTE, data );
-	free(data);
+	glGenTextures(2, &curve2);
+	glBindTexture(GL_TEXTURE_2D, curve2);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	texPixels = read_in_ppm("curve2.ppm");
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, TEXTURE_SIZE, TEXTURE_SIZE, 0, GL_RGB, GL_FLOAT, texPixels);
+	glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 void parse_floats(char *buffer, GLfloat nums[]) {
@@ -511,10 +531,7 @@ void parse_tile(char *buffer)
   int stateI = atoi(strtok(state, " "));
 
 
-  //int i = currTile % BOARD_SIZE;
-  //int j = int(currTile / BOARD_SIZE);
-
-  //printf("ceate tile at position (%d, %d) with state %d\n", row, col, stateI);
+  //printf("ceate tile (%d, %d) at position (%d, %d) with state %d\n", i, j, row, col, stateI);
   //creates the tile object
   theTiles[row][col] = new Tile(row,col,stateI, speed_scale);
   currTile++;
@@ -526,12 +543,6 @@ void parse_tile(char *buffer)
   sh->make_cube(TILE_SIZE);
   real_scaling(sh, 1.0, .25, 1.0);
   real_translation(sh, (float(TILE_SIZE) + float(row*2*TILE_SIZE)), -float(TILE_SIZE/4.0), (float(TILE_SIZE) + float(col*2*TILE_SIZE)));
-
-  //printf("tile %d, %d: state is %d, movement is\n", row, col, stateI);
-  //theTiles[row][col]->movement->printmatrix();
-  //printf("\n");
-
-  //getchar();
 }
 
 /* assuming the spec is going to be properly written
@@ -634,6 +645,7 @@ void my_reshape(int w, int h) {
 //You will have to somehow rotate / translate / scale\
 //the object as specified in the spec file.
 
+/*
 void conetwist(GLfloat deg)
 {
         Shape3d* p = shapelist[0];
@@ -660,7 +672,7 @@ void conewalk(float dist)
         za = za * dist;
 
         real_translation(sh, xa, ya, za);
-}
+}*/
 
 /*void my_scale(GLfloat x, GLfloat y, GLfloat z) {
 
@@ -1947,7 +1959,7 @@ void draw_cube(Shape3d* thecube)
 }
 
 
-void draw_text_face(Face f, int ic, int mode, int state) {
+void draw_text_face(Vertex3d* fir, Vertex3d* sec, Vertex3d* thir, Vertex3d* four, int ic, int mode, int state) {
 	glEnable( GL_TEXTURE_2D );
 	/*GLfloat tex_coords[4][2];
 	switch(state)
@@ -2135,8 +2147,14 @@ void draw_tile(Shape3d* thecube, int color, int state)
                         case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
                         case 6:
                         case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
-                        case 8:
-                        case 9: draw_text_face(*(thecube->facelist[i]), color, thecube->rendermode, state); break;//top
+                        case 9:
+							{
+								Face * temp = (thecube->facelist[8]);
+
+
+								//draw_text_face(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
+								break;//top
+							}
                         case 10:
                         case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
                 }
