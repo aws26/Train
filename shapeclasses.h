@@ -10,7 +10,7 @@
 #define PI 3.14159
 #define TWOPI 6.28319
 #define HALFPI 1.57080
-#define RAD_FRACTION 6
+#define RAD_FRACTION 16
 
 #define CUBE         1
 #define HOUSE         2
@@ -137,7 +137,8 @@ public:
        void setstate(int, float);
 	   void setspeed(float);
        int getnext(int);
-	   Matrix get_rotate(Vertex3d, float,float);
+	   //Matrix get_rotate(Vertex3d, float,float);
+	   Matrix* get_rotate(Vertex3d, float,float);
 };
 
 class Train

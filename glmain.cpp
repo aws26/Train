@@ -2717,6 +2717,7 @@ void my_TimeOut(int id) {
 		{
 			//printf("follow track\n");
 			engine->followtrack();
+			glutPostRedisplay();
 		}
 		else
 		{

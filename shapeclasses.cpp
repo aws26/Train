@@ -884,12 +884,13 @@ Tile::Tile(int r, int c, int s, float sp)
 {
 	row = r;
 	col = c;
-	setstate(s, sp);
 
 	corners[0] = *(new Vertex3d((c * 4), 0, ((r * 4) + 4))); // bottom left corner
 	corners[1] = *(new Vertex3d((c * 4), 0, (r * 4))); // top left corner
 	corners[2] = *(new Vertex3d(((c * 4) + 4), 0, (r * 4))); // top right corner
 	corners[3] = *(new Vertex3d(((c * 4) + 4), 0, ((r * 4) + 4))); // bottom right corner
+
+	setstate(s, sp);
 }
 
 
@@ -901,17 +902,15 @@ void Tile::setspeed(float sp)
 
 void Tile::setstate(int s, float sp) //incomplete
 {
-	printf("state is %d, speed is %f\n", s, sp);
+	//printf("state is %d, speed is %f\n", s, sp);
 	state = s;
 	movement = new Matrix();
 
 	switch(state)
 	{
 		case 0: //fall
-			printf("here in case 0\n");
 			movement->grid[1][3] = -1.0 * sp; break;
 		case 1: //right
-			printf("here in case 1\n");
 			movement->grid[0][3] = 1.0 * sp; break;
 		case 2: //left
 			movement->grid[0][3] = -1.0 * sp; break;
@@ -919,8 +918,7 @@ void Tile::setstate(int s, float sp) //incomplete
 			movement->grid[2][3] = 1.0 * sp; break;
 		case 4: //up
 			movement->grid[2][3] = -1.0 * sp; break;
-		case 5: //clockwise to down
-			printf("here in case 5\n");
+		/*case 5: //clockwise to down
 			movement = &get_rotate(corners[0], sp, -1.0); break;
 		case 6: //counterclockwise to left
 			movement = &get_rotate(corners[0], sp, 1.0); break;
@@ -933,10 +931,25 @@ void Tile::setstate(int s, float sp) //incomplete
 		case 10: //counterclockwise to right
 			movement = &get_rotate(corners[2], sp, 1.0); break;
 		case 11: //clockwise to right
-			printf("here in case 11\n");
 			movement = &get_rotate(corners[3], sp, -1.0); break;
 		case 12: //counterclockwise to down
-			movement = &get_rotate(corners[3], sp, 1.0); break;
+			movement = &get_rotate(corners[3], sp, 1.0); break;*/
+		case 5: //clockwise to down
+			movement = get_rotate(corners[0], sp, -1.0); break;
+		case 6: //counterclockwise to left
+			movement = get_rotate(corners[0], sp, 1.0); break;
+		case 7: //clockwise to left
+			movement = get_rotate(corners[1], sp, -1.0); break;
+		case 8: //counterclockwise to up
+			movement = get_rotate(corners[1], sp, 1.0); break;
+		case 9: //clockwise to up
+			movement = get_rotate(corners[2], sp, -1.0); break;
+		case 10: //counterclockwise to right
+			movement = get_rotate(corners[2], sp, 1.0); break;
+		case 11: //clockwise to right
+			movement = get_rotate(corners[3], sp, -1.0); break;
+		case 12: //counterclockwise to down
+			movement = get_rotate(corners[3], sp, 1.0); break;
 	   default: break;
 	   }
 }
@@ -1013,7 +1026,7 @@ int Tile::getnext(int flag) // 0 is row, 1 is col
 }
 
 
-Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
+Matrix* Tile::get_rotate(Vertex3d bot, float sp, float dir)
 {
 	//rotate around arbitrary axis time
 
@@ -1021,11 +1034,18 @@ Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
 
 	float deg = dir * sp * (PI/RAD_FRACTION);
 
-	Matrix result = *(new Matrix()); // transformation matrix
+	Matrix* result = new Matrix(); // transformation matrix
 
-	result.grid[0][3] = -1.0 * bot.coords[0];  // translate vector base to origin
-	result.grid[1][3] = -1.0 * bot.coords[1];
-	result.grid[2][3] = -1.0 * bot.coords[2];
+	result->grid[0][3] = -1.0 * bot.coords[0];  // translate vector base to origin
+	result->grid[1][3] = -1.0 * bot.coords[1];
+	result->grid[2][3] = -1.0 * bot.coords[2];
+
+	printf("bot is\n");
+	bot.printvertex();
+
+	printf("rotate result 1 is:\n");
+	result->printmatrix();
+	printf("\n");
 
 	float ux = 0.0; // get direction
 	float uy = 1.0;
@@ -1045,7 +1065,11 @@ Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
 	m->grid[2][1] = (uy * uz) * (1 - cos(deg)) + ux * sin(deg);
 	m->grid[2][2] = (uz * uz) + cos(deg) * (1-(uz * uz));
 
-	result = *result.multiply(m);  // multiply rotation matrix in
+	result = result->multiply(m);  // multiply rotation matrix in
+
+	printf("rotate result 2 is:\n");
+	result->printmatrix();
+	printf("\n");
 
 	m = new Matrix(); // third matrix, translate back
 
@@ -1053,7 +1077,11 @@ Matrix Tile::get_rotate(Vertex3d bot, float sp, float dir)
 	m->grid[1][3] = bot.coords[1];
 	m->grid[2][3] = bot.coords[2];
 
-	result = *result.multiply(m);  // multiply translation matrix in
+	result = result->multiply(m);  // multiply translation matrix in
+
+	printf("rotate result 3 is:\n");
+	result->printmatrix();
+	printf("\n");
 
 	return result;
 }
@@ -1072,7 +1100,7 @@ Train::Train(Tile* p)
 	Matrix* m = new Matrix();
 	m->grid[0][3] = 6.0;
 	m->grid[1][3] = 1.0;
-	m->grid[2][3] = 6.0;
+	m->grid[2][3] = 8.0;
 
 	body[0]->ctm = body[0]->ctm->multiply(m);
 	body[0]->transform(2,4);
