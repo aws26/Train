@@ -1959,7 +1959,7 @@ void draw_cube(Shape3d* thecube)
 }
 
 
-void draw_text_face(Face f, int ic, int mode, int state) {
+void draw_text_face_old(Face f, int ic, int mode, int state) {
 	glEnable( GL_TEXTURE_2D );
 	
 	GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
@@ -1981,12 +1981,12 @@ void draw_text_face(Face f, int ic, int mode, int state) {
 	glDisable( GL_TEXTURE_2D );
 }
 
-/*void draw_text_face(Vertex3d* fir, Vertex3d* sec, Vertex3d* thir, Vertex3d* four, int ic, int mode, int state) {
+void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 	glEnable( GL_TEXTURE_2D );
-	/*GLfloat tex_coords[4][2];
+	int tex_coords[4][2];
+
 	switch(state)
 	{
-		//GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
 		case '1':
 			glBindTexture( GL_TEXTURE_2D, straight );
 			tex_coords[0][0] = 0;
@@ -2074,6 +2074,7 @@ void draw_text_face(Face f, int ic, int mode, int state) {
 			tex_coords[2][1] = 1;
 			tex_coords[3][0] = 0;
 			tex_coords[3][1] = 1;
+			break;
 		case '9':
 			glBindTexture( GL_TEXTURE_2D, straight );
 			tex_coords[0][0] = 0;
@@ -2132,25 +2133,24 @@ void draw_text_face(Face f, int ic, int mode, int state) {
 			break;
 	}
 	
-	
-	GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
+	//GLfloat tex_coords[][2] = { {0,0}, {1,0}, {1,1}, {0,1} };
 	glBindTexture( GL_TEXTURE_2D, straight );
 	glBegin(mode);
 	{
 		glColor3fv(colors[ic]);
-		glTexCoord2fv(tex_coords[0]); 
-		glVertex4fv(f.corners[0]->coords);
-		glTexCoord2fv(tex_coords[1]); 
-		glVertex4fv(f.corners[1]->coords);
-		glTexCoord2fv(tex_coords[2]); 
-		glVertex4fv(f.corners[2]->coords);
-		glTexCoord2fv(tex_coords[3]); 
-		//glVertex4fv(f.corners[3]->coords);
+		glTexCoord2f(tex_coords[0][0],tex_coords[0][1]); 
+		glVertex4fv(allCorners[0]->coords);
+		glTexCoord2f(tex_coords[1][0],tex_coords[1][1]); 
+		glVertex4fv(allCorners[1]->coords);
+		glTexCoord2f(tex_coords[2][0],tex_coords[2][1]); 
+		glVertex4fv(allCorners[2]->coords);
+		glTexCoord2f(tex_coords[3][0],tex_coords[3][1]); 
+		glVertex4fv(allCorners[3]->coords);
 	}
 	glEnd();
 	
 	glDisable( GL_TEXTURE_2D );
-}*/
+}
 
 //copy of draw_cube, but allows to color choosing, will use texturing later
 void draw_tile(Shape3d* thecube, int color, int state)
@@ -2171,10 +2171,16 @@ void draw_tile(Shape3d* thecube, int color, int state)
                         case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
                         case 9:
 							{
-								Face * temp = (thecube->facelist[8]);
+								Vertex3d *allCorners[4];
+								Face * temp = thecube->facelist[8];
+								allCorners[0] = temp->corners[0];
+								allCorners[1] = temp->corners[1];
+								allCorners[2] = thecube->facelist[9]->corners[1];
+								allCorners[3] = temp->corners[2];
 
+								draw_text_face(allCorners, WHITE, thecube->rendermode, state);
 
-								draw_text_face(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
+								//draw_text_face_old(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
 								break;//top
 							}
                         case 10:
