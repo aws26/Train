@@ -904,7 +904,7 @@ void my_keyboard( unsigned char key, int x, int y )
 {
   switch( key ) {
 	//commands to control the camera
-	case 'T':
+	/*case 'T':
 	case 't':
 		camera_mode = TRANSLATION_MODE;
 		break;
@@ -953,7 +953,7 @@ void my_keyboard( unsigned char key, int x, int y )
 			case TRANSLATION_MODE: move_camera(0,0,.5); break;
 		}
 		glutPostRedisplay(); 
-	}; break;
+	}; break;*/
 	
 
 	case 'a':
@@ -1000,7 +1000,7 @@ void my_keyboard( unsigned char key, int x, int y )
 		cycle_tile_type(sel_row,sel_col);
 		break;
 
-	case ',':
+	/*case ',':
 		textX = textX + .5;
 		glutPostRedisplay();
 		break;
@@ -1018,7 +1018,7 @@ void my_keyboard( unsigned char key, int x, int y )
 		break;
 	case 'p':
 		printf("text position = %f,%f\n",textX, textY);
-		break;
+		break;*/
 
 	case '+':
 		if(time_speed > 20)
@@ -1068,7 +1068,7 @@ DOES: handles keyboard up events
 void my_keyboard_up( unsigned char key, int x, int y )
 {
 	switch( key ) {
-	case 'S':
+	/*case 'S':
 	case 's': 
 	case 'T':
 	case 't':
@@ -1076,7 +1076,7 @@ void my_keyboard_up( unsigned char key, int x, int y )
 	case 'r': {
 		camera_mode = NONE_MODE;
 		break;
-		}
+		}*/
 	
 	case 'a':
 	case 'b':
@@ -2883,6 +2883,21 @@ void draw_overlay()
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
+	glRasterPos2i(-3,-69);
+	s = "Control the speed with '+' and '-'";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(-12,-50);
+	s = "Switch between Editing and Running mode with the Spacebar";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
 
 	glColor3f(1.0, 0.0, 0.0);
 	glRasterPos2i(-5.5,10);
@@ -2895,6 +2910,18 @@ void draw_overlay()
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
+
+	glRasterPos2i(31,10);
+	char buffer[50];
+	s=sprintf (buffer,"Speed = %d",(150-time_speed));
+	//printf("%s\n",buffer);
+	s=buffer;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
 
 
 	glEnable(GL_LIGHTING);
