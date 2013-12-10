@@ -145,7 +145,7 @@ class Train
 {
 public:
        Tile* position; //current tile
-       Shape3d* body[1]; //shape array
+       Shape3d* body[9]; //shape array
 	   int numshapes; // number of shapes in the body
        bool move;  //to move or not, for more use later
        int movecount; //how many moves so far
@@ -154,6 +154,7 @@ public:
 
        Train(Tile*);
        //void maketiles();
+	   void makebody();
        void followtrack();
 };
 

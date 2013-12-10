@@ -890,15 +890,6 @@ Tile::Tile(int r, int c, int s, float sp)
 	corners[2] = *(new Vertex3d(((c * 4) + 4), 0, (r * 4))); // top right corner
 	corners[3] = *(new Vertex3d(((c * 4) + 4), 0, ((r * 4) + 4))); // bottom right corner
 
-	printf("tile (%d, %d), state %d, corners:\n", r, c, s);
-
-	for (int a=0; a<4; a++)
-	{
-		corners[a].printvertex();
-	}
-
-	printf("\n");
-
 	setstate(s, sp);
 }
 
@@ -1082,57 +1073,113 @@ Train::Train(Tile* p)
 	move = true; 
 	maxmoves = 8;  // this is the default moves to get across the tile, maybe change later
 	movecount = 0;
+	makebody();
+	numshapes = 4;
+}
 
+
+void Train::makebody()
+{
 	body[0] = new Shape3d(CUBE);
 	body[0]->make_cube(1);
 
 	Matrix* m = new Matrix(); //scaling
 	m->grid[0][0] = 0.5;
-	m->grid[1][1] = 0.5;
-	m->grid[2][2] = 0.25;
+	m->grid[1][1] = 0.8;
+	m->grid[2][2] = 0.5;
 
 	body[0]->ctm = body[0]->ctm->multiply(m);
 
 	m = new Matrix(); //translation
 	m->grid[0][3] = 6.0;
-	m->grid[1][3] = 1.0;
+	m->grid[1][3] = 0.5;
 	m->grid[2][3] = 9.0;
 
 	body[0]->ctm = body[0]->ctm->multiply(m);
 	body[0]->transform(2,4);
 	body[0]->cubeface();
 
+	/****************************************************************************************/
 
 	body[1] = new Shape3d(CYLINDER);
 	body[1]->make_cylinder(1.0, 1.0, 30, 10);
 
 	m = new Matrix(); //scaling
 	m->grid[0][0] = 0.5;
-	m->grid[1][1] = 0.5;
-	m->grid[2][2] = 1.0;
+	m->grid[1][1] = 1.3;
+	m->grid[2][2] = 0.5;
 
 	body[1]->ctm = body[1]->ctm->multiply(m);
 
 	m = new Matrix(); //rotation
 	m->grid[1][1] = cos(PI/2);
-	m->grid[1][1] = cos(PI/2);
-	m->grid[1][1] = cos(PI/2);
-	m->grid[1][1] = cos(PI/2);
+	m->grid[1][2] = -1.0 * sin(PI/2);
+	m->grid[2][1] = sin(PI/2);
+	m->grid[2][2] = cos(PI/2);
 
 	body[1]->ctm = body[1]->ctm->multiply(m);
 
 	m = new Matrix(); //translation
 	m->grid[0][3] = 6.0;
-	m->grid[1][3] = 1.0;
-	m->grid[2][3] = 9.0;
+	m->grid[1][3] = 0.4;
+	m->grid[2][3] = 8.0;
 
 	body[1]->ctm = body[1]->ctm->multiply(m);
 	body[1]->transform(10,30);
 	body[1]->makeface(10, 30);
 
-	numshapes = 3;
-}
+	/**************************************************************************************/
 
+	body[2] = new Shape3d(CYLINDER);
+	body[2]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.15;
+	m->grid[1][1] = 0.5;
+	m->grid[2][2] = 0.15;
+
+	body[2]->ctm = body[2]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 6.0;
+	m->grid[1][3] = 1.0;
+	m->grid[2][3] = 7.7;
+
+	body[2]->ctm = body[2]->ctm->multiply(m);
+
+	body[2]->transform(10,30);
+	body[2]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[3] = new Shape3d(CYLINDER);
+	body[3]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.2;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.2;
+
+	body[3]->ctm = body[3]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[3]->ctm = body[3]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 5.5;
+	m->grid[1][3] = 0.5;
+	m->grid[2][3] = 8.0;
+
+	body[3]->ctm = body[3]->ctm->multiply(m);
+
+	body[3]->transform(10,30);
+	body[3]->makeface(10, 30);
+}
 
 
 void Train::followtrack()

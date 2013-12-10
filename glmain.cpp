@@ -63,7 +63,7 @@ typedef struct _LITE{
   GLfloat angle;
 }LITE;
 
-GLfloat colors [][3] = {
+GLfloat colors [][3] = {//************************************* color change **********************************
   {0.0, 0.0, 0.0},  /* black   */
   {1.0, 0.0, 0.0},  /* red     */
   {1.0, 1.0, 0.0},  /* yellow  */
@@ -73,7 +73,8 @@ GLfloat colors [][3] = {
   {0.0, 0.0, 1.0},  /* blue    */
   {0.5, 0.5, 0.5},  /* 50%grey */
   {1.0, 1.0, 1.0},   /* white   */
-  {.588, .294, 0.0}   /* brown   */
+  {.588, .294, 0.0},   /* brown   */
+  {0.1, 0.1, 0.1}  /* dark grey */
 };
 
 GLfloat vertices_axes[][4] = {
@@ -1943,17 +1944,17 @@ void draw_cube(Shape3d* thecube)
                 switch (i)
                 {
                         case 0:
-                        case 1: my_draw_triangle(*(thecube->facelist[i]), MAGENTA, thecube->rendermode); break;
+                        case 1: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                         case 2:
-                        case 3: my_draw_triangle(*(thecube->facelist[i]), BLUE, thecube->rendermode); break;
+                        case 3: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                         case 4:
-                        case 5: my_draw_triangle(*(thecube->facelist[i]), CYAN, thecube->rendermode); break;
+                        case 5: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                         case 6:
-                        case 7: my_draw_triangle(*(thecube->facelist[i]), YELLOW, thecube->rendermode); break;
+                        case 7: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                         case 8:
                         case 9: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                         case 10:
-                        case 11: my_draw_triangle(*(thecube->facelist[i]), WHITE, thecube->rendermode); break;
+                        case 11: my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode); break;
                 }
         }
 }
@@ -2340,11 +2341,29 @@ void draw_cylinder(Shape3d* thecylinder)
                 //printf("drawing face %d\n", i);
                 if(i%4 == 0)
                 {
-                        my_draw_triangle(*(thecylinder->facelist[i]), WHITE, thecylinder->rendermode);
+                        my_draw_triangle(*(thecylinder->facelist[i]), DRKGRY, thecylinder->rendermode);
                 }
                 else
                 {
-                        my_draw_triangle(*(thecylinder->facelist[i]), RED, thecylinder->rendermode);
+                        my_draw_triangle(*(thecylinder->facelist[i]), DRKGRY, thecylinder->rendermode);
+                }
+        }
+}
+
+
+void draw_light_cylinder(Shape3d* thecylinder)
+{
+        //printf("draw 4\n");
+        for (int i=0; i<thecylinder->facecount; i++)
+        {
+                //printf("drawing face %d\n", i);
+                if(i%4 == 0)
+                {
+                        my_draw_triangle(*(thecylinder->facelist[i]), GREY, thecylinder->rendermode);
+                }
+                else
+                {
+                        my_draw_triangle(*(thecylinder->facelist[i]), GREY, thecylinder->rendermode);
                 }
         }
 }
@@ -2672,7 +2691,14 @@ void draw_train()
 				draw_sphere(cur);
 				break;
 			case 4: //cylinder
-				draw_cylinder(cur);
+				if(i == 1)
+				{
+					draw_light_cylinder(cur);
+				}
+				else
+				{
+					draw_cylinder(cur);
+				}
 				break;
 			case 5: //cone
 				draw_cone(cur);
@@ -2857,7 +2883,7 @@ void my_TimeOut(int id) {
 	}
 
         //glutTimerFunc(1000, my_TimeOut, 0);
-	glutTimerFunc(1000, my_TimeOut, 0);
+	glutTimerFunc(100, my_TimeOut, 0);
 
         return ;
 }

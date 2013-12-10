@@ -37,6 +37,7 @@ DOES: header file for cs1566 Assignment 4 -- Modeler
 #define GREY    7
 #define WHITE   8
 #define BROWN	9
+#define DRKGRY 10
 
 #define TRANSLATION_MODE 0
 #define ROTATION_MODE 1
