@@ -2013,7 +2013,7 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 			*/
 
 	//printf("final state = %d\n\n",state);
-
+	
 	switch(state)
 	{
 		case 1:
@@ -2082,106 +2082,132 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 			}
 		case 5:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
+			glBindTexture( GL_TEXTURE_2D, curve2 );
+			tex_coords[0][0] = 1;
 			tex_coords[0][1] = 0;
+
 			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
+			tex_coords[1][1] = 1;
+
+			tex_coords[2][0] = 0;
 			tex_coords[2][1] = 1;
+
 			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		case 6:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
+			glBindTexture( GL_TEXTURE_2D, curve1 );
+			tex_coords[0][0] = 1;
 			tex_coords[0][1] = 0;
+
 			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
+			tex_coords[1][1] = 1;
+
+			tex_coords[2][0] = 0;
 			tex_coords[2][1] = 1;
+
 			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		case 7:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
-			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
-			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+			//tex_coords[4][2] = { {1,1}, {0,1}, {0,0}, {1,0} };
+			glBindTexture( GL_TEXTURE_2D, curve2 );
+			tex_coords[0][0] = 1;
+			tex_coords[0][1] = 1;
+
+			tex_coords[1][0] = 0;
+			tex_coords[1][1] = 1;
+
+			tex_coords[2][0] = 0;
+			tex_coords[2][1] = 0;
+
+			tex_coords[3][0] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		case 8:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
-			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
-			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+			glBindTexture( GL_TEXTURE_2D, curve1 );
+			tex_coords[0][0] = 1;
+			tex_coords[0][1] = 1;
+
+			tex_coords[1][0] = 0;
+			tex_coords[1][1] = 1;
+
+			tex_coords[2][0] = 0;
+			tex_coords[2][1] = 0;
+
+			tex_coords[3][0] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		case 9:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
+			glBindTexture( GL_TEXTURE_2D, curve1 );
+			tex_coords[0][0] = 1;
 			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
+
+			tex_coords[1][0] = 0;
 			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
+
+			tex_coords[2][0] = 0;
 			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
+
+			tex_coords[3][0] = 1;
 			tex_coords[3][1] = 1;
 			break;
 			}
 		case 10:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
-			tex_coords[0][0] = 0;
+			glBindTexture( GL_TEXTURE_2D, curve2 );
+			tex_coords[0][0] = 1;
 			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
+
+			tex_coords[1][0] = 0;
 			tex_coords[1][1] = 0;
-			tex_coords[2][0] = 1;
+
+			tex_coords[2][0] = 0;
 			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
+
+			tex_coords[3][0] = 1;
 			tex_coords[3][1] = 1;
 			break;
 			}
 		case 11:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
+			//int tex_coords[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
+			glBindTexture( GL_TEXTURE_2D, curve1 );
 			tex_coords[0][0] = 0;
 			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
+
+			tex_coords[1][0] = 0;
+			tex_coords[1][1] = 1;
+
 			tex_coords[2][0] = 1;
 			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+
+			tex_coords[3][0] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		case 12:
 			{
-			glBindTexture( GL_TEXTURE_2D, straight );
+			glBindTexture( GL_TEXTURE_2D, curve2 );
 			tex_coords[0][0] = 0;
 			tex_coords[0][1] = 0;
-			tex_coords[1][0] = 1;
-			tex_coords[1][1] = 0;
+
+			tex_coords[1][0] = 0;
+			tex_coords[1][1] = 1;
+
 			tex_coords[2][0] = 1;
 			tex_coords[2][1] = 1;
-			tex_coords[3][0] = 0;
-			tex_coords[3][1] = 1;
+
+			tex_coords[3][0] = 1;
+			tex_coords[3][1] = 0;
 			break;
 			}
 		default:
@@ -2199,7 +2225,12 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 			break;
 			}
 	}
+	
 
+	//glBindTexture( GL_TEXTURE_2D, curve1 );
+	//							1		2		3		4
+	//int tex_coords[4][2] = { {0,0}, {0,1}, {1,1}, {1,0} };
+	//int tex_coords[4][2] = { {1,1}, {0,1}, {0,0}, {1,0} };
 	glBegin(mode);
 	{
 		glColor3fv(colors[ic]);
@@ -2235,17 +2266,17 @@ void draw_tile(Shape3d* thecube, int state)
                         case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
                         case 6:
                         case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
-						case 8: //break;
+						case 8: break;
                         case 9:
 							{
-								if(state == 1)
+								/*if(state == 1)
 								{my_draw_triangle(*(thecube->facelist[i]), GREEN, thecube->rendermode);}
 								else if(state == 2)
 								{my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode);}
 								else
-								{my_draw_triangle(*(thecube->facelist[i]), WHITE, thecube->rendermode);}
+								{my_draw_triangle(*(thecube->facelist[i]), WHITE, thecube->rendermode);}*/
 								
-								/*Vertex3d *allCorners[4];
+								Vertex3d *allCorners[4];
 								Face * temp = thecube->facelist[8];
 								allCorners[0] = temp->corners[0];
 								allCorners[1] = temp->corners[1];
@@ -2254,7 +2285,7 @@ void draw_tile(Shape3d* thecube, int state)
 
 								draw_text_face(allCorners, WHITE, thecube->rendermode, state);
 
-								//draw_text_face_old(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);*/
+								//draw_text_face_old(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
 								break;//top
 							}
                         case 10:
