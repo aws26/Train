@@ -89,6 +89,8 @@ GLuint straight;
 GLuint curve1;
 GLuint curve2;
 
+float textX=10.0, textY=10.0;
+
 void make_cube_smart(OBJECT *po, double size );
 
 void real_translation(OBJECT *po, GLfloat x, GLfloat y, GLfloat z);
@@ -190,7 +192,7 @@ void glut_setup (){
 
   glutInitWindowSize(WINDOW_WIDTH,WINDOW_HEIGHT);
   glutInitWindowPosition(20,20);
-  glutCreateWindow("CS1566 Project 4");
+  glutCreateWindow("Final project");
 
   /* set up callback functions */
   glutDisplayFunc(my_display);
@@ -875,18 +877,21 @@ void cycle_tile_type(int row, int col)
 	//printf("cycle tile\n");
 	if(editing)
 	{
-		if(col != -1)
+		if(col != -1 && row != -1)
 		{
-			int currState = theTiles[row][col]->state;
-			Tile *currTile = theTiles[row][col];
-			currState++;
-			if(currState>12)
+			if(row<7 && row>0 && col<7 && col>0)
 			{
-				currState = 1;
-			}
-			currTile->setstate(currState,speed_scale);
+				int currState = theTiles[row][col]->state;
+				Tile *currTile = theTiles[row][col];
+				currState++;
+				if(currState>12)
+				{
+					currState = 1;
+				}
+				currTile->setstate(currState,speed_scale);
 
-			glutPostRedisplay();
+				glutPostRedisplay();
+			}
 		}
 	}
 }
@@ -1006,6 +1011,25 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		cycle_tile_type(sel_row,sel_col);
 		break;
 
+	case ',':
+		textX = textX + .5;
+		glutPostRedisplay();
+		break;
+	case '.':
+		textX = textX - .5;
+		glutPostRedisplay();
+		break;
+	case '[':
+		textY = textY + .5;
+		glutPostRedisplay();
+		break;
+	case ']':
+		textY = textY - .5;
+		glutPostRedisplay();
+		break;
+	case 'p':
+		printf("text position = %f,%f\n",textX, textY);
+		break;
 
   case ' ':
     //Switch between editing and play
@@ -1020,36 +1044,7 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		  printf("Now in Editing mode\n");
 	  }
     break;
-  /*case 'd':
-    conetwist(PI/-30);
-    glutPostRedisplay() ;
-    break;
-  case 'a':
-    conetwist(PI/30);
-    glutPostRedisplay() ;
-    break;
-  case 'w':
-    conewalk(-1);
-    glutPostRedisplay();
-    break;
-  case 's':
-    conewalk(1);
-    glutPostRedisplay();
-    break;
-  case 'b':
-          if(norms_enabled)
-          {
-                  norms_enabled = false;
-          }
-          else
-          {
-                  norms_enabled = true;
-          }
-    glutPostRedisplay();
-    break;
-  case 'j':
-    jump_enabled = true;
-    break;*/
+  
   case 'q':
   case 'Q':
     exit(0) ;
@@ -2252,47 +2247,52 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 //copy of draw_cube, but allows to color choosing, will use texturing later
 void draw_tile(Shape3d* thecube, int state)
 {
-        //printf("i should draw a cube\n");
+    //printf("i should draw a cube\n");
 		//printf("state = %d\n",state);
-        for (int i=0; i<thecube->facecount; i++)
-        {
-                //printf("face number %d\n", i);
-                switch (i)
-                {
-                        case 0:
-                        case 1: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//left
-                        case 2:
-                        case 3: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//front
-                        case 4:
-                        case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
-                        case 6:
-                        case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
-						case 8: break;
-                        case 9:
-							{
-								/*if(state == 1)
-								{my_draw_triangle(*(thecube->facelist[i]), GREEN, thecube->rendermode);}
-								else if(state == 2)
-								{my_draw_triangle(*(thecube->facelist[i]), RED, thecube->rendermode);}
-								else
-								{my_draw_triangle(*(thecube->facelist[i]), WHITE, thecube->rendermode);}*/
-								
-								Vertex3d *allCorners[4];
-								Face * temp = thecube->facelist[8];
-								allCorners[0] = temp->corners[0];
-								allCorners[1] = temp->corners[1];
-								allCorners[2] = thecube->facelist[9]->corners[1];
-								allCorners[3] = temp->corners[2];
-
-								draw_text_face(allCorners, WHITE, thecube->rendermode, state);
-
-								//draw_text_face_old(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
-								break;//top
-							}
-                        case 10:
-                        case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
-                }
-        }
+	if(state != 0)
+	{
+		for (int i=0; i<thecube->facecount; i++)
+		{
+			//printf("face number %d\n", i);
+			switch (i)
+			{
+				case 0:
+				case 1: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//left
+				case 2:
+				case 3: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//front
+				case 4:
+				case 5: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//right
+				case 6:
+				case 7: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//back
+				case 8:
+					{
+						if(state != 13)
+						{break;}
+					}
+				case 9:
+					{
+						if(state == 13)
+						{
+							my_draw_triangle(*(thecube->facelist[i]), GREEN, thecube->rendermode); break;//back
+						}
+						else
+						{
+							Vertex3d *allCorners[4];
+							Face * temp = thecube->facelist[8];
+							allCorners[0] = temp->corners[0];
+							allCorners[1] = temp->corners[1];
+							allCorners[2] = thecube->facelist[9]->corners[1];
+							allCorners[3] = temp->corners[2];
+							draw_text_face(allCorners, WHITE, thecube->rendermode, state);
+							//draw_text_face_old(*(thecube->facelist[i]), WHITE, thecube->rendermode, state);
+						}
+						break;//top
+					}
+				case 10:
+				case 11: my_draw_triangle(*(thecube->facelist[i]), BROWN, thecube->rendermode); break;//bottom
+			}
+		}
+	}
 }
 
 
@@ -2624,8 +2624,14 @@ void draw_tiles()
 			switch(currState)
 			{
 				case 0:
+					{
 					//draw_tile(cur, BLACK);
+					if(i<7 && i>0 && j<7 && j>0)
+					{
+						draw_tile(cur, 13);
+					}
 					break;
+					}
 				default:
 					draw_tile(cur, currState);
 					break;
@@ -2715,7 +2721,18 @@ void draw_train()
 
 void draw_overlay()
 {
-	glDisable(GL_TEXTURE_2D);
+	/*
+	glColor3f(1.0, 1.0, 1.0);
+	glRasterPos2i(textX, textY);
+	string s = "A test string!";
+	void * font = GLUT_BITMAP_9_BY_15;
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	*/
+
 	glDisable(GL_LIGHTING);
 
 	glMatrixMode(GL_PROJECTION);
@@ -2727,7 +2744,7 @@ void draw_overlay()
 	glPushMatrix();
 	glLoadIdentity();
 
-	glColor3f(1.0, 0.0, 1.0);
+	glColor3f(1.0, 1.0, 1.0);
 	glRasterPos2i(10, 10);
 	string s = "A test string!";
 	void * font = GLUT_BITMAP_9_BY_15;
@@ -2743,13 +2760,12 @@ void draw_overlay()
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 
-	glEnable(GL_TEXTURE_2D);
 	glEnable(GL_LIGHTING);
 }
 
 
-void my_display() {
-
+void my_display()
+{
   // clear all pixels, reset depth
   glClear(GL_COLOR_BUFFER_BIT |GL_DEPTH_BUFFER_BIT );
 
@@ -2760,14 +2776,15 @@ void my_display() {
             my_cam.at[0],my_cam.at[1],my_cam.at[2],
             my_cam.up[0], my_cam.up[1], my_cam.up[2]);
 
+  draw_overlay();
+
   glRotatef(theta_x,1,0,0);
   glRotatef(theta_y,0,1,0);
   glRotatef(theta_z,0,0,1);
 
   //update the flashlight to follow the person
-  glDisable( GL_TEXTURE_2D );
   //draw the objects
-  draw_axes();
+  //draw_axes();
 
   draw_objects();
 
@@ -2802,7 +2819,7 @@ void my_idle(void) {
   return ;
 }
 
-
+/*
 void update_jump()
 {
         switch(jumpcount)
@@ -2835,17 +2852,18 @@ void update_jump()
                 default: break;
         }
 }
+*/
 
 void my_TimeOut(int id) {
         /* right now, does nothing*/
         /* schedule next timer event, 2 secs from now */ 
         
-        if(jump_enabled)
+        /*if(jump_enabled)
         {
                 printf("doing jump\n");
                 update_jump();
                 glutPostRedisplay();
-        }
+        }*/
 
 		//check for whether in editting mode or not, only move if not
 	if(!editing)
