@@ -63,7 +63,7 @@ typedef struct _LITE{
   GLfloat angle;
 }LITE;
 
-GLfloat colors [][3] = {//************************************* color change **********************************
+GLfloat colors [][3] = {
   {0.0, 0.0, 0.0},  /* black   */
   {1.0, 0.0, 0.0},  /* red     */
   {1.0, 1.0, 0.0},  /* yellow  */
@@ -125,6 +125,7 @@ int sel_col = -1;
 Train* engine;
 
 float speed_scale;
+int time_speed;
 
 bool editing=true;
 
@@ -266,6 +267,8 @@ void my_setup(int argc, char **argv){
         jumpcount = 0;
 
 	speed_scale = 1.0; // probably change later
+	time_speed = 60;
+
   //If you want to allow the user to type in the spec file
   //then modify the following code.
   //Otherwise, the program will attempt to load the file as specified
@@ -1029,6 +1032,19 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		break;
 	case 'p':
 		printf("text position = %f,%f\n",textX, textY);
+		break;
+
+	case '+':
+		if(time_speed > 20)
+		{
+			time_speed -= 5;
+		}
+		break;
+	case '-':
+		if(time_speed < 100)
+		{
+			time_speed += 5;
+		}
 		break;
 
   case ' ':
@@ -2776,7 +2792,7 @@ void my_display()
             my_cam.at[0],my_cam.at[1],my_cam.at[2],
             my_cam.up[0], my_cam.up[1], my_cam.up[2]);
 
-  draw_overlay();
+  //draw_overlay();
 
   glRotatef(theta_x,1,0,0);
   glRotatef(theta_y,0,1,0);
@@ -2854,34 +2870,19 @@ void update_jump()
 }
 */
 
-void my_TimeOut(int id) {
-        /* right now, does nothing*/
-        /* schedule next timer event, 2 secs from now */ 
-        
-        /*if(jump_enabled)
-        {
-                printf("doing jump\n");
-                update_jump();
-                glutPostRedisplay();
-        }*/
+void my_TimeOut(int id) 
+{
 
 		//check for whether in editting mode or not, only move if not
 	if(!editing)
 	{
-		//printf("move code\n");
-		//printf("movecount is %d, maxmoves is %d\n", engine->movecount, engine->maxmoves);
-
 		if(engine->movecount < engine->maxmoves)
 		{
-			//printf("follow track, tile (%d, %d), state %d\n", engine->position->row, engine->position->col, engine->position->state);
 			engine->followtrack();
 			glutPostRedisplay();
 		}
 		else
 		{
-			//printf("end of tile****************************\n");
-			printf("end of tile, tile (%d, %d), state %d\n", engine->position->row, engine->position->col, engine->position->state);
-			
 			if(engine->position->state != 0)
 			{
 				engine->movecount = 0;
@@ -2889,19 +2890,16 @@ void my_TimeOut(int id) {
 				int r = engine->position->getnext(0);
 				int c = engine->position->getnext(1);
 
-				printf("getnext: r is %d and c is %d\n\n", r, c);
-
 				engine->position = theTiles[r][c];
 
-				printf("follow track, tile (%d, %d), state %d\n", engine->position->row, engine->position->col, engine->position->state);
 				engine->followtrack();
 				glutPostRedisplay();
 			}
 		}
 	}
-
+	//time_speed = 25;
         //glutTimerFunc(1000, my_TimeOut, 0);
-	glutTimerFunc(100, my_TimeOut, 0);
+	glutTimerFunc(time_speed, my_TimeOut, 0);
 
         return ;
 }

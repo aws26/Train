@@ -1074,7 +1074,7 @@ Train::Train(Tile* p)
 	maxmoves = 8;  // this is the default moves to get across the tile, maybe change later
 	movecount = 0;
 	makebody();
-	numshapes = 4;
+	numshapes = 9;
 }
 
 
@@ -1171,22 +1171,169 @@ void Train::makebody()
 	body[3]->ctm = body[3]->ctm->multiply(m);
 
 	m = new Matrix(); //translation
-	m->grid[0][3] = 5.5;
-	m->grid[1][3] = 0.5;
-	m->grid[2][3] = 8.0;
+	m->grid[0][3] = 6.55;
+	m->grid[1][3] = 0.3;
+	m->grid[2][3] = 7.7;
 
 	body[3]->ctm = body[3]->ctm->multiply(m);
 
 	body[3]->transform(10,30);
 	body[3]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[4] = new Shape3d(CYLINDER);
+	body[4]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.2;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.2;
+
+	body[4]->ctm = body[4]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[4]->ctm = body[4]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 6.55;
+	m->grid[1][3] = 0.3;
+	m->grid[2][3] = 8.2;
+
+	body[4]->ctm = body[4]->ctm->multiply(m);
+
+	body[4]->transform(10,30);
+	body[4]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[5] = new Shape3d(CYLINDER);
+	body[5]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.4;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.4;
+
+	body[5]->ctm = body[5]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[5]->ctm = body[5]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 6.55;
+	m->grid[1][3] = 0.35;
+	m->grid[2][3] = 9.0;
+
+	body[5]->ctm = body[5]->ctm->multiply(m);
+
+	body[5]->transform(10,30);
+	body[5]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[6] = new Shape3d(CYLINDER);
+	body[6]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.2;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.2;
+
+	body[6]->ctm = body[6]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[6]->ctm = body[6]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 5.47;
+	m->grid[1][3] = 0.3;
+	m->grid[2][3] = 7.7;
+
+	body[6]->ctm = body[6]->ctm->multiply(m);
+
+	body[6]->transform(10,30);
+	body[6]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[7] = new Shape3d(CYLINDER);
+	body[7]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.2;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.2;
+
+	body[7]->ctm = body[7]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[7]->ctm = body[7]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 5.47;
+	m->grid[1][3] = 0.3;
+	m->grid[2][3] = 8.2;
+
+	body[7]->ctm = body[7]->ctm->multiply(m);
+
+	body[7]->transform(10,30);
+	body[7]->makeface(10, 30);
+
+	/****************************************************************************************/
+
+	body[8] = new Shape3d(CYLINDER);
+	body[8]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.4;
+	m->grid[1][1] = 0.1;
+	m->grid[2][2] = 0.4;
+
+	body[8]->ctm = body[8]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[0][0] = cos(PI/2);
+	m->grid[0][1] = -1.0 * sin(PI/2);
+	m->grid[1][0] = sin(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[8]->ctm = body[8]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 5.47;
+	m->grid[1][3] = 0.35;
+	m->grid[2][3] = 9.0;
+
+	body[8]->ctm = body[8]->ctm->multiply(m);
+
+	body[8]->transform(10,30);
+	body[8]->makeface(10, 30);
 }
 
 
 void Train::followtrack()
 {
-	position->movement->printmatrix();
-	printf("\n");
-
 	for(int a=0; a<numshapes; a++)
 	{
 		body[a]->ctm = body[a]->ctm->multiply(position->movement);
