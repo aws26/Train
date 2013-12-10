@@ -597,7 +597,7 @@ void read_spec(char *fname) {
 
 void lighting_setup () {
   int i;
-  GLfloat globalAmb[]     = {.1, .1, .1, .1};
+  GLfloat globalAmb[] = {.01, .01, .01, .01};
 
   // create flashlight
   GLfloat amb[] = {0.2, 0.2, 0.2, 1.0};
@@ -622,7 +622,7 @@ void lighting_setup () {
  // glLightfv(GL_LIGHT0, GL_SPECULAR, spec);
  // glLightf(GL_LIGHT0, GL_SPOT_CUTOFF, 30.0);
 
- // glEnable(GL_LIGHT0);
+ glEnable(GL_LIGHT0);
 
   // setup properties of lighting
   for (i=1; i<=num_lights; i++) {
@@ -900,8 +900,8 @@ void cycle_tile_type(int row, int col)
 }
 
 
-void my_keyboard( unsigned char key, int x, int y ) {
-
+void my_keyboard( unsigned char key, int x, int y )
+{
   switch( key ) {
 	//commands to control the camera
 	case 'T':
@@ -957,34 +957,24 @@ void my_keyboard( unsigned char key, int x, int y ) {
 	
 
 	case 'a':
-		sel_col=0;
-		break;
-	case 'b':
 		sel_col=1;
 		break;
-	case 'c':
+	case 'b':
 		sel_col=2;
 		break;
-	case 'd':
+	case 'c':
 		sel_col=3;
 		break;
-	case 'e':
+	case 'd':
 		sel_col=4;
 		break;
-	case 'f':
+	case 'e':
 		sel_col=5;
 		break;
-	case 'g':
+	case 'f':
 		sel_col=6;
 		break;
-	case 'h':
-		sel_col=7;
-		break;
 
-	case '0':
-		sel_row=0;
-		cycle_tile_type(sel_row,sel_col);
-		break;
 	case '1':
 		sel_row=1;
 		cycle_tile_type(sel_row,sel_col);
@@ -1007,10 +997,6 @@ void my_keyboard( unsigned char key, int x, int y ) {
 		break;
 	case '6':
 		sel_row=6;
-		cycle_tile_type(sel_row,sel_col);
-		break;
-	case '7':
-		sel_row=7;
 		cycle_tile_type(sel_row,sel_col);
 		break;
 
@@ -1053,11 +1039,13 @@ void my_keyboard( unsigned char key, int x, int y ) {
 	  {
 		editing=false;
 		printf("Now in Run mode\n");
+		glutPostRedisplay();
 	  }
 	  else
 	  {
 		  editing=true;
 		  printf("Now in Editing mode\n");
+		  glutPostRedisplay();
 	  }
     break;
   
@@ -1095,9 +1083,7 @@ void my_keyboard_up( unsigned char key, int x, int y )
 	case 'c':
 	case 'd':
 	case 'e':
-	case 'f':
-	case 'g':
-	case 'h': {
+	case 'f': {
 		sel_col = -1;
 		//printf("key up\n");
 		break;
@@ -1671,7 +1657,7 @@ void my_raytrace()
         }
 }
 
-
+/*
 void my_raytrace(int mousex, int mousey)
 {
         double modelViewMatrix[16];
@@ -1683,25 +1669,95 @@ void my_raytrace(int mousex, int mousey)
         double clickPoint[3];
         float intersectionPoint[3];
         float closestPoint[3];
-        float rayStart[3];
-        float rayDirection[3];
+        float rayStart[4];
+        float rayDirection[4];
         OBJECT *cur;
+		GLfloat winX, winY, winZ;
+		GLfloat direction[4] ={0.0,0.0,0.0,1.0};
+
+		/*
+		winX = (GLfloat)mousex;
+		winY = view[3] - (GLfloat)mousey;
+
+		winZ = (GLfloat)0.0;
+
+		//printf("winX=%f, winY=%f, winZ=%f\n",winX,winY,winZ);
+
+		//glReadPixels( mousex, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ );
+		gluUnProject(winX, winY, winZ, model, proj, view, &objX, &objY, &objZ);
+		//printf("object x, y, z coord at near plane = (%f, %f, %f)\n\n",objX, objY, objZ);
+		nearPlane[0]=objX;
+		nearPlane[1]=objY;
+		nearPlane[2]=objZ;
+		nearPlane[3]=1.0;
+
+		winZ = -1.0;
+		gluUnProject(winX, winY, winZ, model, proj, view, &objX, &objY, &objZ);
+		//printf("object x, y, z coord at far plane = (%f, %f, %f)\n",objX, objY, objZ);
+		farPlane[0]=objX;
+		farPlane[1]=objY;
+		farPlane[2]=objZ;
+		farPlane[3]=1.0;
+
+		GLfloat position[4]={my_cam.pos[0],my_cam.pos[1],my_cam.pos[2],my_cam.pos[3]};
+
+		sub_vector(farPlane,position,direction);
+		normalizeS(direction);
+
+		//printf("position=(%f, %f, %f), direction=(%f, %f, %f)\n",position[0], position[1], position[2], direction[0], direction[1], direction[2]);
+
+		GLfloat dt[4]={};
+		vector_t_scalar(direction,100.0,dt);
+
+		copy_glf_vert(clickP,position);
+		copy_glf_vert(clickDT,dt);
+		
+
 
         // first we need to get the modelview matrix, the projection matrix, and the viewport
         glGetDoublev(GL_MODELVIEW_MATRIX, modelViewMatrix);
         glGetDoublev(GL_PROJECTION_MATRIX, projMatrix);
         glGetIntegerv(GL_VIEWPORT, viewport);
 
+		winX = (GLfloat)mousex;
+		winY = viewport[3] - (GLfloat)mousey;
+		winZ = (GLfloat)-1.0;
+
         // gluUnProject with a Z value of 1 will find the point on the far clipping plane
         // corresponding the the mouse click. This is not the same as the vector
         // representing the click.
-        gluUnProject(mousex, mousey, 1.0, modelViewMatrix, projMatrix, viewport, &clickPoint[0], &clickPoint[1], &clickPoint[2]);
+        gluUnProject(winX, winY, winZ, modelViewMatrix, projMatrix, viewport, &clickPoint[0], &clickPoint[1], &clickPoint[2]);
 
-        // Now we need a vector representing the click. It should start at the camera
-        // position. We can subtract the click point, we will get the vector
+		GLfloat position[4]={my_cam.pos[0],my_cam.pos[1],my_cam.pos[2],my_cam.pos[3]};
+		sub_vector(farPlane,position,direction);
+		normalizeS(direction);
 
-        /* code for finding direction vector, set rayStart and rayDirection */
 
+		Shape3d* sh;
+        Vertex3d* inters[NUM_OBJECTS];
+
+        for(int a=1; a<nextindex; a++)
+        {
+                sh = shapelist[a];
+                inters[a] = shape_intersect(sh);
+        }
+
+        numintersections = 0;
+
+        printf("Intersections:\n");
+        for(int b=1; b<nextindex; b++)
+        {
+                //printf("checking shape %d\n", b);
+
+                if(inters[b]->coords[3] != 0)
+                {
+                        shapelist[b]->rendermode = GL_LINE_LOOP;
+                        printf("Shape %d at ", b);
+                        inters[b]->printvertex();
+                        intersectionlist[numintersections] = inters[b];
+                        numintersections++;
+                }
+        }
         // now go through the shapes and see if there is a hit
         for (i=0; i<num_objects; i++)
         {
@@ -1746,6 +1802,7 @@ void my_raytrace(int mousex, int mousey)
                 printf("No intersection\n");
         }
 }
+*/
 
 void my_mouse(int button, int state, int mousex, int mousey) {
 
@@ -1766,9 +1823,9 @@ void my_mouse(int button, int state, int mousex, int mousey) {
 
   case GLUT_RIGHT_BUTTON:
     if ( state == GLUT_DOWN ) {
-				my_raytrace(mousex, mousey);
-                ray_enabled = true;
-                glutPostRedisplay();
+				//my_raytrace(mousex, mousey);
+                //ray_enabled = true;
+                //glutPostRedisplay();
     }
 
     if( state == GLUT_UP ) {
@@ -2484,11 +2541,6 @@ void draw_objects() {
         {
                 Shape3d *cur;
                 cur = shapelist[i];
-
-                glMaterialfv(GL_FRONT, GL_AMBIENT, cur->amb);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, cur->diff);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, cur->spec);
-                glMaterialfv(GL_FRONT, GL_SHININESS, &cur->shine);
                 //glMaterialfv(GL_FRONT, GL_EMISSION, cur->emi);
 
                 switch(cur->type)
@@ -2695,12 +2747,6 @@ void draw_train()
 	{
 		cur = engine->body[i];
 
-                /*glMaterialfv(GL_FRONT, GL_AMBIENT, cur->amb);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, cur->diff);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, cur->spec);
-                glMaterialfv(GL_FRONT, GL_SHININESS, &cur->shine);*/
-                //glMaterialfv(GL_FRONT, GL_EMISSION, cur->emi);
-
 		switch(cur->type)
 		{
 			case 1: //cube
@@ -2737,20 +2783,122 @@ void draw_train()
 
 void draw_overlay()
 {
-	/*
+	glDisable(GL_LIGHTING);
 	glColor3f(1.0, 1.0, 1.0);
-	glRasterPos2i(textX, textY);
-	string s = "A test string!";
+
+
+
+
+	glRasterPos2i(5,-2);
+	string s = "A";
 	void * font = GLUT_BITMAP_9_BY_15;
 	for (string::iterator i = s.begin(); i != s.end(); ++i)
 	{
 		char c = *i;
 		glutBitmapCharacter(font, c);
 	}
-	*/
+	glRasterPos2i(9.5,-2);
+	s = "B";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(13.5,-2);
+	s = "C";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(17,-2);
+	s = "D";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(22,-2);
+	s = "E";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(26,-2);
+	s = "F";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
 
-	glDisable(GL_LIGHTING);
+	glRasterPos2i(1.5,-5);
+	s = "1";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(.5,-8.5);
+	s = "2";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(-1.5,-12.5);
+	s = "3";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(-3,-17);
+	s = "4";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(-5.5,-24.5);
+	s = "5";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+	glRasterPos2i(-7.5,-31.5);
+	s = "6";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
 
+	glRasterPos2i(-19,-59);
+	s = "Press the 2 keys for the row and column of the tile you wish to change";
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
+	glColor3f(1.0, 0.0, 0.0);
+	glRasterPos2i(-5.5,10);
+	if(editing)
+	{s = "Editing";}
+	else
+	{s = "Running";}
+	for (string::iterator i = s.begin(); i != s.end(); ++i)
+	{
+		char c = *i;
+		glutBitmapCharacter(font, c);
+	}
+
+
+	glEnable(GL_LIGHTING);
+	/*
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glLoadIdentity();
@@ -2775,10 +2923,8 @@ void draw_overlay()
 
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
-
-	glEnable(GL_LIGHTING);
+	*/
 }
-
 
 void my_display()
 {
@@ -2792,8 +2938,6 @@ void my_display()
             my_cam.at[0],my_cam.at[1],my_cam.at[2],
             my_cam.up[0], my_cam.up[1], my_cam.up[2]);
 
-  //draw_overlay();
-
   glRotatef(theta_x,1,0,0);
   glRotatef(theta_y,0,1,0);
   glRotatef(theta_z,0,0,1);
@@ -2802,7 +2946,7 @@ void my_display()
   //draw the objects
   //draw_axes();
 
-  draw_objects();
+  //draw_objects();
 
   draw_tiles();
 
@@ -2824,7 +2968,7 @@ void my_display()
         draw_markers();
   }
 
-  //draw_overlay();
+  draw_overlay();
 
   // this buffer is ready
   glutSwapBuffers();
