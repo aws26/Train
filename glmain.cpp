@@ -3014,6 +3014,67 @@ void update_jump()
 }
 */
 
+
+bool goodstate(int olds, int news)
+{
+	switch(news)
+	{
+	case(1): // left to right
+	case(5):
+	case(8):
+		if(olds == 1 || olds == 10 || olds == 11)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case(3): // top to bottom
+	case(7):
+	case(10):
+		if(olds == 3 || olds == 5 || olds == 12)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case(2): // right to left
+	case(9):
+	case(12):
+		if(olds == 2 || olds == 6 || olds == 7)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case(4): // bottom to top
+	case(6):
+	case(11):
+		if(olds == 4 || olds == 8 || olds == 9)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		break;
+	case (0):
+		return true;
+		break;
+	default: return false; break;
+	}
+}
+
+
 void my_TimeOut(int id) 
 {
 
@@ -3031,13 +3092,23 @@ void my_TimeOut(int id)
 			{
 				engine->movecount = 0;
 
+				int old = engine->position->state;
 				int r = engine->position->getnext(0);
 				int c = engine->position->getnext(1);
 
 				engine->position = theTiles[r][c];
 
-				engine->followtrack();
-				glutPostRedisplay();
+				if(goodstate(old, engine->position->state))
+				{
+					engine->followtrack();
+					glutPostRedisplay();
+				}
+				else
+				{
+					editing=true;
+					printf("Now in Editing mode\n");
+					glutPostRedisplay();
+				}
 			}
 		}
 	}
