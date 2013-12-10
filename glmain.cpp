@@ -2012,7 +2012,7 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 			tex_coords[3][1] = 0;
 			*/
 
-	printf("final state = %d\n\n",state);
+	//printf("final state = %d\n\n",state);
 
 	switch(state)
 	{
@@ -2171,7 +2171,7 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 			tex_coords[3][1] = 1;
 			break;
 			}
-		case '12':
+		case 12:
 			{
 			glBindTexture( GL_TEXTURE_2D, straight );
 			tex_coords[0][0] = 0;
@@ -2221,7 +2221,7 @@ void draw_text_face(Vertex3d** allCorners, int ic, int mode, int state) {
 void draw_tile(Shape3d* thecube, int state)
 {
         //printf("i should draw a cube\n");
-		printf("state = %d\n",state);
+		//printf("state = %d\n",state);
         for (int i=0; i<thecube->facecount; i++)
         {
                 //printf("face number %d\n", i);
@@ -2570,7 +2570,7 @@ void draw_tiles()
             cur = tileShapes[i][j];
 			//switch color based on the state of the tile
 			int currState = theTiles[i][j]->state;
-			printf("currState = %d\n",currState);
+			//printf("currState = %d\n",currState);
 			switch(currState)
 			{
 				case 0:
@@ -2798,7 +2798,7 @@ void my_TimeOut(int id) {
 
 		if(engine->movecount < engine->maxmoves)
 		{
-			printf("follow track, tile (%d, %d), state %d\n", engine->position->row, engine->position->col, engine->position->state);
+			//printf("follow track, tile (%d, %d), state %d\n", engine->position->row, engine->position->col, engine->position->state);
 			engine->followtrack();
 			glutPostRedisplay();
 		}

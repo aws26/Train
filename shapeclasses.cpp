@@ -997,22 +997,22 @@ int Tile::getnext(int flag) // 0 is row, 1 is col
 	case(1): //to the right
 	case(10):
 	case(11):
-		r++;
+		c++;
 		break;
 	case(3): //down
        case(5):
        case(12):
-               c++;
+               r++;
                break;
        case(2): //to the left
        case(6):
        case(7):
-               r--;
+               c--;
                break;
        case(4): //up
        case(8):
        case(9):
-               c--;
+               r--;
                break;
        default: break;
        }
@@ -1023,6 +1023,7 @@ int Tile::getnext(int flag) // 0 is row, 1 is col
 	}
 	else
 		return c;
+
 }
 
 
@@ -1085,70 +1086,59 @@ Train::Train(Tile* p)
 	body[0] = new Shape3d(CUBE);
 	body[0]->make_cube(1);
 
-	Matrix* m = new Matrix();
+	Matrix* m = new Matrix(); //scaling
+	m->grid[0][0] = 0.5;
+	m->grid[1][1] = 0.5;
+	m->grid[2][2] = 0.25;
+
+	body[0]->ctm = body[0]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
 	m->grid[0][3] = 6.0;
 	m->grid[1][3] = 1.0;
-	m->grid[2][3] = 8.0;
+	m->grid[2][3] = 9.0;
 
 	body[0]->ctm = body[0]->ctm->multiply(m);
 	body[0]->transform(2,4);
 	body[0]->cubeface();
 
-	numshapes = 1;
 
+	body[1] = new Shape3d(CYLINDER);
+	body[1]->make_cylinder(1.0, 1.0, 30, 10);
+
+	m = new Matrix(); //scaling
+	m->grid[0][0] = 0.5;
+	m->grid[1][1] = 0.5;
+	m->grid[2][2] = 1.0;
+
+	body[1]->ctm = body[1]->ctm->multiply(m);
+
+	m = new Matrix(); //rotation
+	m->grid[1][1] = cos(PI/2);
+	m->grid[1][1] = cos(PI/2);
+	m->grid[1][1] = cos(PI/2);
+	m->grid[1][1] = cos(PI/2);
+
+	body[1]->ctm = body[1]->ctm->multiply(m);
+
+	m = new Matrix(); //translation
+	m->grid[0][3] = 6.0;
+	m->grid[1][3] = 1.0;
+	m->grid[2][3] = 9.0;
+
+	body[1]->ctm = body[1]->ctm->multiply(m);
+	body[1]->transform(10,30);
+	body[1]->makeface(10, 30);
+
+	numshapes = 3;
 }
 
-
-/*void Train::maketiles()//this makes tiles for the map
-{
-}*/
-
-
-/*void Train::followtrack()
-{
-	int* row;
-	int* col;
-
-	while(move)
-	{
-		movecount = 0;
-
-		while(movecount < maxmoves)
-		{
-			for(int a=0; a<numshapes; a++)
-			{
-				body[a]->ctm = body[a]->ctm->multiply(position->movement);
-				movecount++;
-			}
-		}
-
-		position->getnext(row, col);
-		//position = map[*row][*col];
-	}
-}*/
 
 
 void Train::followtrack()
 {
 	position->movement->printmatrix();
 	printf("\n");
-
-	switch(position->state)
-	{
-		case 5: //clockwise to down
-		case 6: //counterclockwise to left
-			position->corners[0].printvertex(); break;
-		case 7: //clockwise to left
-		case 8: //counterclockwise to up
-			position->corners[1].printvertex(); break;
-		case 9: //clockwise to up
-		case 10: //counterclockwise to right
-			position->corners[2].printvertex(); break;
-		case 11: //clockwise to right
-		case 12: //counterclockwise to down
-			position->corners[3].printvertex(); break;
-	   default: break;
-	   }
 
 	for(int a=0; a<numshapes; a++)
 	{
